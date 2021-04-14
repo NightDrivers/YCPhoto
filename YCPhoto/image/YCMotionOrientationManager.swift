@@ -1,5 +1,5 @@
 //
-//  SJMotionOrientationManager.swift
+//  YCMotionOrientationManager.swift
 //  MotionOrientationDemo
 //
 //  Created by Yudiz Solutions on 29/08/18.
@@ -11,17 +11,17 @@ import Foundation
 import UIKit
 import CoreMotion
 
-typealias SJDeviceOrientationHandler = (UIDeviceOrientation) -> Swift.Void
-typealias SJInterfaceOrientationHandler = (UIInterfaceOrientation) -> Swift.Void
+typealias YCDeviceOrientationHandler = (UIDeviceOrientation) -> Swift.Void
+typealias YCInterfaceOrientationHandler = (UIInterfaceOrientation) -> Swift.Void
 
-extension SJMotionOrientationManager {
+extension YCMotionOrientationManager {
     
-    static let deviceOrientationDidChangeNotification = Notification.Name.init(rawValue: "SJMotionOrientationManager.device.orientation.did.change")
+    static let deviceOrientationDidChangeNotification = Notification.Name.init(rawValue: "YCMotionOrientationManager.device.orientation.did.change")
 }
 
 //MARK: 当iPhone锁定屏幕朝向后，系统的UIDevice.orientationDidChangeNotification无法生效，只好用这个了
-class SJMotionOrientationManager: NSObject{
-    static let shared =  SJMotionOrientationManager()
+class YCMotionOrientationManager: NSObject{
+    static let shared =  YCMotionOrientationManager()
     
     // MARK: - Variables
     var motionManager: CMMotionManager = {
@@ -38,8 +38,8 @@ class SJMotionOrientationManager: NSObject{
     var interfaceOrientation: UIInterfaceOrientation = .portrait
     var deviceOrientation: UIDeviceOrientation = .portrait
     
-    var deviceOrientationBlock: SJDeviceOrientationHandler?
-    var interfaceOrientationBlock: SJInterfaceOrientationHandler?
+    var deviceOrientationBlock: YCDeviceOrientationHandler?
+    var interfaceOrientationBlock: YCInterfaceOrientationHandler?
     
     var affineTransform: CGAffineTransform {
         var rotationDegree: CGFloat = 0
@@ -68,7 +68,7 @@ class SJMotionOrientationManager: NSObject{
         super.init()
     }
     
-    func startAccelerometerUpdates(deviceBlock: SJDeviceOrientationHandler? = nil, interfaceBlock: SJInterfaceOrientationHandler? = nil){
+    func startAccelerometerUpdates(deviceBlock: YCDeviceOrientationHandler? = nil, interfaceBlock: YCInterfaceOrientationHandler? = nil){
         self.deviceOrientationBlock = deviceBlock
         self.interfaceOrientationBlock = interfaceBlock
         // Simulator
@@ -76,7 +76,7 @@ class SJMotionOrientationManager: NSObject{
         self.prepareForSimulator()
         #endif
         if (!self.motionManager.isAccelerometerAvailable) {
-            print("SJMotionOrientationManager - Accelerometer is NOT available");
+            print("YCMotionOrientationManager - Accelerometer is NOT available");
             return;
         }
         self.motionManager.startAccelerometerUpdates(to: self.operationQueue) { [weak self] (accelerometerData, error) in
@@ -132,7 +132,7 @@ class SJMotionOrientationManager: NSObject{
         if deviceOrientationChanged {
             self.deviceOrientationBlock?(self.deviceOrientation)
         }
-        NotificationCenter.default.post(name: SJMotionOrientationManager.deviceOrientationDidChangeNotification, object: self)
+        NotificationCenter.default.post(name: YCMotionOrientationManager.deviceOrientationDidChangeNotification, object: self)
         
         if interfaceOrientationChanged{
             self.interfaceOrientationBlock?(self.interfaceOrientation)
@@ -246,7 +246,7 @@ class SJMotionOrientationManager: NSObject{
     // Simulator support
     #if arch(i386) || arch(x86_64)
     func prepareForSimulator(){
-        print("SJMotionOrientationManager - Simulator in use. Using UIDevice instead")
+        print("YCMotionOrientationManager - Simulator in use. Using UIDevice instead")
         NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         NotificationCenter.default.addObserver(self, selector: #selector(deviceOrientationChanged(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)

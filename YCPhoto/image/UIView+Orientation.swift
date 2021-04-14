@@ -7,14 +7,14 @@
 
 import UIKit
 
-extension UIView {
+public extension UIView {
     
     func monitorDeviceOrientation() -> Void {
         
         NotificationCenter.default.addObserver(
             self, 
             selector: #selector(self.deviceOrientationDidChange), 
-            name: SJMotionOrientationManager.deviceOrientationDidChangeNotification, 
+            name: YCMotionOrientationManager.deviceOrientationDidChangeNotification, 
             object: nil
         )
     }
@@ -23,7 +23,7 @@ extension UIView {
         
         DispatchQueue.main.async {
             UIView.animate(withDuration: 0.25, animations: {
-                self.transform = SJMotionOrientationManager.shared.affineTransform
+                self.transform = YCMotionOrientationManager.shared.affineTransform
             })
         }
     }

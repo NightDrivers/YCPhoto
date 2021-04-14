@@ -20,25 +20,13 @@ extension CGPoint {
     var length: CGFloat { sqrt(x * x + y * y) }
 }
 
-enum YCCropMode {
+public enum YCCropMode {
     case noCrop
     case fixableCrop(CGFloat)//TODO: 暂未完全实现
     case flexibleCrop(CGFloat)
 }
 
-extension UIImage {
-    
-    func sub(_ ratioRect: CGRect) -> UIImage {
-        
-        let rect = CGRect.init(x: self.pixelWidth*ratioRect.origin.x, 
-                               y: self.pixelHeight*ratioRect.origin.y, 
-                               width: self.pixelWidth*ratioRect.width, 
-                               height: self.pixelHeight*ratioRect.height)
-        return self.crop(pixelRect: rect)
-    }
-}
-
-class YCImageCropViewController: UIViewController {
+public class YCImageCropViewController: UIViewController {
     
     var didCropClosure: ((UIImage, CGRect) -> Void)?
     
@@ -60,7 +48,7 @@ class YCImageCropViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         makeConstraint()
         view.backgroundColor = UIColor.black
@@ -97,7 +85,7 @@ class YCImageCropViewController: UIViewController {
         }
     }
     
-    override var prefersStatusBarHidden: Bool { true }
+    public override var prefersStatusBarHidden: Bool { true }
     
     lazy var cropView: YCCropView = {
         let temp = YCCropView.init(image: image, cropMode: cropMode)
@@ -131,7 +119,7 @@ class YCImageCropViewController: UIViewController {
     lazy var okButton: UIButton = {
         let temp = UIButton.init(type: .custom)
         temp.monitorDeviceOrientation()
-        temp.setImage(#imageLiteral(resourceName: "image_crop_ok"), for: .normal)
+        temp.setImage(getBundleImage( "image_crop_ok"), for: .normal)
         temp.addTarget(self, action: #selector(self.cropAction), for: .touchUpInside)
         bottomBgView.addSubview(temp)
         return temp
@@ -140,7 +128,7 @@ class YCImageCropViewController: UIViewController {
     lazy var closeButton: UIButton = {
         let temp = UIButton.init(type: .custom)
         temp.monitorDeviceOrientation()
-        temp.setImage(#imageLiteral(resourceName: "camera_close"), for: .normal)
+        temp.setImage(getBundleImage( "camera_close"), for: .normal)
         temp.addTarget(self, action: #selector(self.closeAction), for: .touchUpInside)
         bottomBgView.addSubview(temp)
         return temp
@@ -149,7 +137,7 @@ class YCImageCropViewController: UIViewController {
     lazy var rotateButton: UIButton = {
         let temp = UIButton.init(type: .custom)
         temp.monitorDeviceOrientation()
-        temp.setImage(#imageLiteral(resourceName: "icon_rotate"), for: .normal)
+        temp.setImage(getBundleImage( "icon_rotate"), for: .normal)
         temp.addTarget(self, action: #selector(self.rotateAction), for: .touchUpInside)
         bottomBgView.addSubview(temp)
         return temp
@@ -258,8 +246,8 @@ class YCCropView: UIView {
             $0.top.left.greaterThanOrEqualToSuperview().offset(padding)
             $0.bottom.right.lessThanOrEqualToSuperview().offset(-padding)
             
-            $0.top.left.equalToSuperview().offset(padding).priorityMedium()
-            $0.bottom.right.equalToSuperview().offset(-padding).priorityMedium()
+            $0.top.left.equalToSuperview().offset(padding).priority(.medium)
+            $0.bottom.right.equalToSuperview().offset(-padding).priority(.medium)
             
             $0.center.equalToSuperview()
             $0.width.equalTo(imageView.snp.height).multipliedBy(image.size.ratio)

@@ -8,7 +8,7 @@
 import UIKit
 import CoreMedia
 
-extension UIImage {
+public extension UIImage {
     
     static func image(sample buffer: CMSampleBuffer, device orientation: UIDeviceOrientation) -> UIImage {
         
@@ -40,5 +40,38 @@ extension UIImage {
         let image = UIImage.init(cgImage: cgImage, scale: 1, orientation: imageOrientation)
         CVPixelBufferUnlockBaseAddress(buffer, CVPixelBufferLockFlags.init(rawValue: 0))
         return image
+    }
+}
+
+public extension UIImage {
+    
+    func maxSize(_ pixelCount: CGFloat) -> UIImage {
+        
+        var scale: CGFloat = 1
+        if pixelWidth > pixelCount || pixelHeight > pixelCount {
+            let maxPixel = max(pixelWidth, pixelHeight)
+            scale = pixelCount/maxPixel
+        }
+        let size = CGSize.init(width: floor(pixelWidth*scale), height: floor(pixelHeight*scale))
+        let rect = CGRect.init(origin: .zero, size: size)
+        UIGraphicsBeginImageContext(size)
+        UIColor.white.setFill()
+        UIRectFill(rect)
+        draw(in: rect)
+        let result = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return result
+    }
+}
+
+public extension UIImage {
+    
+    func sub(_ ratioRect: CGRect) -> UIImage {
+        
+        let rect = CGRect.init(x: self.pixelWidth*ratioRect.origin.x, 
+                               y: self.pixelHeight*ratioRect.origin.y, 
+                               width: self.pixelWidth*ratioRect.width, 
+                               height: self.pixelHeight*ratioRect.height)
+        return self.crop(pixelRect: rect)
     }
 }

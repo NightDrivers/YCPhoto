@@ -10,13 +10,13 @@ import UIKit
 import Photos
 import BaseKitSwift
 
-class YCImagePickerViewController: UINavigationController {
+public class YCImagePickerViewController: UINavigationController {
     
-    var didPickPhotoClosure: (([UIImage]) -> Void)?
+    public var didPickPhotoClosure: (([UIImage]) -> Void)?
     
     private let imagePickerHostViewController: YCImagePickerHostViewController
     
-    init(style: YCImagePickerStyle) {
+    public init(style: YCImagePickerStyle) {
         self.imagePickerHostViewController = YCImagePickerHostViewController.init(style: style)
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .fullScreen
@@ -24,7 +24,7 @@ class YCImagePickerViewController: UINavigationController {
         self.setViewControllers([self.imagePickerHostViewController], animated: true)
     }
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         self.imagePickerHostViewController.didPickPhotoClosure = { [weak self] in
             self?.didPickPhotoClosure?($0)
@@ -87,7 +87,7 @@ func fetchAssetCollections() -> [YCAssetCollection] {
     return collections
 }
 
-enum YCImagePickerStyle {
+public enum YCImagePickerStyle {
     case single(needCamera: Bool)
     case multi(maxCount: Int)
     case singleForCrop(ratio: CGFloat)
@@ -262,8 +262,8 @@ private class YCImagePickerHostViewController: UIViewController {
     lazy var collectionSwitchButton: UIButton = {
         let temp = UIButton.init(type: .custom)
         temp.setTitle(pickedAssetCollection?.collection.localizedTitle, for: .normal)
-        temp.setImage(#imageLiteral(resourceName: "btn_icon_arrow_down"), for: .normal)
-        temp.setImage(#imageLiteral(resourceName: "btn_icon_arrow_up"), for: .selected)
+        temp.setImage(getBundleImage( "btn_icon_arrow_down"), for: .normal)
+        temp.setImage(getBundleImage( "btn_icon_arrow_up"), for: .selected)
         temp.setTitleColor(.black, for: .normal)
         temp.addTarget(self, action: #selector(self.collectionSwitchButtonAction), for: .touchUpInside)
         topView.addSubview(temp)
@@ -272,7 +272,7 @@ private class YCImagePickerHostViewController: UIViewController {
     
     lazy var closeButton: UIButton = {
         let temp = UIButton.init(type: .custom)
-        temp.setImage(#imageLiteral(resourceName: "btn_close"), for: .normal)
+        temp.setImage(getBundleImage( "btn_close"), for: .normal)
         temp.addTarget(self, action: #selector(self.closeAction), for: .touchUpInside)
         topView.addSubview(temp)
         return temp
@@ -513,18 +513,20 @@ extension YCImageAssetsView: UICollectionViewDelegateFlowLayout, UICollectionVie
         case .multi(maxCount: _):
             guard let temp = collection else { return }
             let asset = temp.fetchResult[indexPath.item]
-            PHImageManager.default().loadHighQualityImage(asset: asset, completeClosure: {
-                guard let image = $0 else {
+            self.viewController?.requestImage(asset: asset, showActivity: false, closure: {
+                switch $0 {
+                case .success(let image):
+                    self.imageCache[indexPath.item] = image
+                    if let indexPaths = collectionView.indexPathsForSelectedItems {
+                        self.didPickedPhotosCountChangeClosure?(indexPaths.count)
+                    }else {
+                        self.didPickedPhotosCountChangeClosure?(0)
+                    }
+                case .failure(let closure):
                     collectionView.deselectItem(at: indexPath, animated: true)
-                    return
+                    closure()
                 }
-                self.imageCache[indexPath.item] = image
-                if let indexPaths = collectionView.indexPathsForSelectedItems {
-                    self.didPickedPhotosCountChangeClosure?(indexPaths.count)
-                }else {
-                    self.didPickedPhotosCountChangeClosure?(0)
-                }
-            }, requestActivityIndicatorVisible: false, target: viewController)
+            })
         case .single(needCamera: let needCamera):
             collectionView.deselectItem(at: indexPath, animated: true)
             if needCamera && indexPath.item == 0 {
@@ -533,27 +535,35 @@ extension YCImageAssetsView: UICollectionViewDelegateFlowLayout, UICollectionVie
                 let index = needCamera ? indexPath.item + 1 : indexPath.item
                 guard let temp = collection else { return }
                 let asset = temp.fetchResult[index]
-                PHImageManager.default().loadHighQualityImage(asset: asset, completeClosure: {
-                    guard let image = $0 else { return }
-                    self.didPickImageClosure?(image)
-                }, requestActivityIndicatorVisible: false, target: viewController)
+                self.viewController?.requestImage(asset: asset, closure: {
+                    switch $0 {
+                    case .success(let image):
+                        self.didPickImageClosure?(image)
+                    case .failure(let closure):
+                        closure()
+                    }
+                })
             }
         case .singleForCrop(ratio: let ratio):
             collectionView.deselectItem(at: indexPath, animated: true)
             let index = indexPath.item
             guard let temp = collection else { return }
             let asset = temp.fetchResult[index]
-            PHImageManager.default().loadHighQualityImage(asset: asset, completeClosure: {
-                guard let image = $0 else { return }
-                let temp = YCImageCropViewController.init(image: image, cropMode: .fixableCrop(ratio), rotatable: true)
-                temp.didCropClosure = { [weak temp] in
-                    let image = $0.sub($1)
-                    temp?.dismiss(animated: false, completion: {
-                        self.didPickImageClosure?(image)
-                    })
+            self.viewController?.requestImage(asset: asset, closure: {
+                switch $0 {
+                case .success(let image):
+                    let temp = YCImageCropViewController.init(image: image, cropMode: .fixableCrop(ratio), rotatable: true)
+                    temp.didCropClosure = { [weak temp] in
+                        let image = $0.sub($1)
+                        temp?.dismiss(animated: false, completion: {
+                            self.didPickImageClosure?(image)
+                        })
+                    }
+                    self.viewController?.present(temp, animated: false, completion: nil)
+                case .failure(let closure):
+                    closure()
                 }
-                self.viewController?.present(temp, animated: false, completion: nil)
-            }, requestActivityIndicatorVisible: false, target: viewController)
+            })
         }
     }
     
@@ -637,6 +647,8 @@ extension YCImageAssetsView: UICollectionViewDelegateFlowLayout, UICollectionVie
 
 class YCImageAssetCollectionViewCell: UICollectionViewCell {
     
+    var requestID: PHImageRequestID?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         imageView.snp.makeConstraints {
@@ -655,7 +667,7 @@ class YCImageAssetCollectionViewCell: UICollectionViewCell {
     override var isSelected: Bool {
         
         didSet {
-            selectedImageView.image = isSelected ? #imageLiteral(resourceName: "selection_icon") : #imageLiteral(resourceName: "unselected_icon")
+            selectedImageView.image = isSelected ? getBundleImage( "selection_icon") : getBundleImage( "unselected_icon")
         }
     }
     
@@ -677,7 +689,7 @@ class YCImageAssetCollectionViewCell: UICollectionViewCell {
     lazy var selectedImageView: UIImageView = {
         let temp = UIImageView()
         temp.isHidden = true
-        temp.image = #imageLiteral(resourceName: "unselected_icon")
+        temp.image = getBundleImage( "unselected_icon")
         contentView.addSubview(temp)
         return temp
     }()

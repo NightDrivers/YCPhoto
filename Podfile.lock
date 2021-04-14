@@ -11,13 +11,16 @@ PODS:
   - BaseKitSwift/View (5.0.29):
     - SnapKit
   - SnapKit (5.0.1)
+  - SVProgressHUD (2.2.5)
 
 DEPENDENCIES:
   - "BaseKitSwift (from `ssh://lindc@10.10.2.2:29418/~lindc/BaseKitSwift.git`)"
+  - SVProgressHUD
 
 SPEC REPOS:
   trunk:
     - SnapKit
+    - SVProgressHUD
 
 EXTERNAL SOURCES:
   BaseKitSwift:
@@ -31,7 +34,8 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   BaseKitSwift: e098cac83711ccb235e78cd04025027846028a4a
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
 
-PODFILE CHECKSUM: af8c36256e23bac4ef504581d6fabdd0c2f60fce
+PODFILE CHECKSUM: 0a5dae4f85b1669439ced9447f5e7069ae9e28ea
 
 COCOAPODS: 1.10.1

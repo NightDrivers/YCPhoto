@@ -24,13 +24,13 @@ extension UIView {
     }
 }
 
-class YCCameraViewController: UINavigationController {
+public class YCCameraViewController: UINavigationController {
     
-    var didPickPhotoClosure: ((UIImage) -> Void)?
+    public var didPickPhotoClosure: ((UIImage) -> Void)?
     
     private let hostViewController: YCCameraHostViewController
     
-    init(with cropMode: YCCropMode = .noCrop, supply view: UIView? = nil) {
+    public init(with cropMode: YCCropMode = .noCrop, supply view: UIView? = nil) {
         self.hostViewController = YCCameraHostViewController.init(with: cropMode, supply: view)
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .fullScreen
@@ -38,7 +38,7 @@ class YCCameraViewController: UINavigationController {
         self.setViewControllers([self.hostViewController], animated: true)
     }
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         self.hostViewController.didPickImageClosure = { [weak self] in
             self?.didPickPhotoClosure?($0)
@@ -73,7 +73,7 @@ private class YCCameraHostViewController: UIViewController {
         
         view.backgroundColor = UIColor.white
         makeConstraint()
-        SJMotionOrientationManager.shared.startAccelerometerUpdates()
+        YCMotionOrientationManager.shared.startAccelerometerUpdates()
     }
     
     func didTakePhotoAction(_ image: UIImage, target: UIViewController, closure: @escaping (UIImage) -> Void) -> Void {
@@ -146,7 +146,7 @@ private class YCCameraHostViewController: UIViewController {
     }()
     
     deinit {
-        SJMotionOrientationManager.shared.stopAccelerometerUpdates()
+        YCMotionOrientationManager.shared.stopAccelerometerUpdates()
     }
 }
 
@@ -241,7 +241,7 @@ class YCCameraImagePickerView: UIView {
     lazy var closeButton: UIButton = {
         let temp = UIButton.init(type: .custom)
         temp.monitorDeviceOrientation()
-        temp.setImage(#imageLiteral(resourceName: "camera_close"), for: .normal)
+        temp.setImage(getBundleImage( "camera_close"), for: .normal)
         temp.tag = 1
         temp.addTarget(self, action: #selector(self.buttonAction(sender:)), for: .touchUpInside)
         addSubview(temp)
@@ -251,7 +251,7 @@ class YCCameraImagePickerView: UIView {
     lazy var torchButton: UIButton = {
         let temp = UIButton.init(type: .custom)
         temp.monitorDeviceOrientation()
-        temp.setImage(#imageLiteral(resourceName: "camera_torch"), for: .normal)
+        temp.setImage(getBundleImage( "camera_torch"), for: .normal)
         temp.tag = 2
         temp.addTarget(self, action: #selector(self.buttonAction(sender:)), for: .touchUpInside)
         addSubview(temp)
@@ -261,7 +261,7 @@ class YCCameraImagePickerView: UIView {
     lazy var photoLibraryButton: UIButton = {
         let temp = UIButton.init(type: .custom)
         temp.monitorDeviceOrientation()
-        temp.setImage(#imageLiteral(resourceName: "camera_photo_library"), for: .normal)
+        temp.setImage(getBundleImage( "camera_photo_library"), for: .normal)
         temp.tag = 3
         temp.addTarget(self, action: #selector(self.buttonAction(sender:)), for: .touchUpInside)
         addSubview(temp)
@@ -271,7 +271,7 @@ class YCCameraImagePickerView: UIView {
     lazy var captureButton: UIButton = {
         let temp = UIButton.init(type: .custom)
         temp.monitorDeviceOrientation()
-        temp.setImage(#imageLiteral(resourceName: "cameral_take_photo"), for: .normal)
+        temp.setImage(getBundleImage( "cameral_take_photo"), for: .normal)
         temp.tag = 4
         temp.addTarget(self, action: #selector(self.buttonAction(sender:)), for: .touchUpInside)
         addSubview(temp)
@@ -312,7 +312,7 @@ class YCCameraView: UIView {
                         print(error)
                     }
                     guard let photoSampleBuffer = buffer else { return }
-                    let image = UIImage.image(sample: photoSampleBuffer, device: UIDevice.current.orientation)
+                    let image = UIImage.image(sample: photoSampleBuffer, device: YCMotionOrientationManager.shared.deviceOrientation)
                     self.didCapturePhotoClosure?(image)
                 })
             }
@@ -351,7 +351,7 @@ extension YCCameraView: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         
         guard let buffer = photo.pixelBuffer else { return }
-        let image = UIImage.image(pixel: buffer, device: UIDevice.current.orientation)
+        let image = UIImage.image(pixel: buffer, device: YCMotionOrientationManager.shared.deviceOrientation)
         didCapturePhotoClosure?(image)
     }
     
@@ -359,7 +359,7 @@ extension YCCameraView: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
         
         guard let photoSampleBuffer = photoSampleBuffer else { return }
-        let image = UIImage.image(sample: photoSampleBuffer, device: UIDevice.current.orientation)
+        let image = UIImage.image(sample: photoSampleBuffer, device: YCMotionOrientationManager.shared.deviceOrientation)
         didCapturePhotoClosure?(image)
     }
 }

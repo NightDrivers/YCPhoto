@@ -8,3 +8,13 @@ target 'YCPhoto' do
   # Pods for YCPhoto
   pod 'BaseKitSwift', :git => 'ssh://lindc@10.10.2.2:29418/~lindc/BaseKitSwift.git'
 end
+
+target 'Example' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for YCPhoto
+  pod 'BaseKitSwift', :git => 'ssh://lindc@10.10.2.2:29418/~lindc/BaseKitSwift.git'
+  pod 'SVProgressHUD'
+end
+

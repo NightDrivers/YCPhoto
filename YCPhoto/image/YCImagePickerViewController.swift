@@ -140,82 +140,55 @@ class YCImagePickerHostViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     
-    
     fileprivate let imageManager = PHCachingImageManager()
+    
     fileprivate var previousPreheatRect = CGRect.zero
     
     var assetItemSize: CGSize { collectionViewFlowLayout.itemSize }
     
-    var collection: YCAssetCollection? {
+    var imageCache = [Int : UIImage]()
+    
+    var style: YCImagePickerStyle = .single(needCamera: false)
+    
+    var collections: [YCAssetCollection] = [] {
         
         didSet {
+            tableView.reloadData()
+        }
+    }
+    var currentAssetCollection: YCAssetCollection? {
+        
+        didSet {
+            self.collectionSwitchButton.setTitle(currentAssetCollection?.collection.localizedTitle, for: .normal)
             self.imageCache = [:]
             self.collectionView.reloadData()
             self.updatePickedImageCount()
         }
     }
     
-    var didPickImageClosure: ((UIImage) -> Void)?
-    var imageCache = [Int : UIImage]()
-    var multiSelectPhotos: [UIImage] {
-        
-        var result = [UIImage]()
-        switch style {
-        case .multi(maxCount: _):
-            if let selectIndexPaths = collectionView.indexPathsForSelectedItems {
-                for indexPath in selectIndexPaths.sorted(by: { $0.row < $1.row }) {
-                    if let image = imageCache[indexPath.item] {
-                        result.append(image)
-                    }
-                }
-            }
-        default:
-            break
-        }
-        return result
-    }
-    
-    var style: YCImagePickerStyle = .single(needCamera: false)
-    
-    var collections: [YCAssetCollection] = [] {
-        didSet {
-            tableView.reloadData()
-        }
-    }
-    var pickedAssetCollection: YCAssetCollection? {
-        
-        didSet {
-            self.collectionSwitchButton.setTitle(pickedAssetCollection?.collection.localizedTitle, for: .normal)
-            self.collection = pickedAssetCollection
-            self.collectionView.reloadData()
-        }
-    }
-    
     var didPickPhotoClosure: (([UIImage]) -> Void)?
-    
-    var didPickCollectionClosure: ((YCAssetCollection) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = UIColor.white
-        setSubviewClosure()
         PHPhotoLibrary.shared().register(self)
         configure()
         
         self.collections = fetchAssetCollections()
         if self.collections.count > 0 {
-            self.pickedAssetCollection = self.collections[0]
+            self.currentAssetCollection = self.collections[0]
         }
     }
     
     func configure() -> Void {
         
         multiSelectCompleteButton.setTitle("0/\(style.maxCount)\("完成".localized)", for: .normal)
-        collectionSwitchButton.setTitle(pickedAssetCollection?.collection.localizedTitle, for: .normal)
+        collectionSwitchButton.setTitle(currentAssetCollection?.collection.localizedTitle, for: .normal)
         collectionSwitchButton.setImage(getBundleImage("btn_icon_arrow_down"), for: .normal)
         collectionSwitchButton.setImage(getBundleImage("btn_icon_arrow_up"), for: .selected)
         closeButton.setImage(getBundleImage("btn_close"), for: .normal)
+        
         let w = floor((UIScreen.main.bounds.width - 3)/3)
         collectionViewFlowLayout.itemSize = CGSize.init(width: w, height: w)
         switch style {
@@ -231,33 +204,6 @@ class YCImagePickerHostViewController: UIViewController {
             $0.top.equalTo(topView.snp.bottom)
         }
         effectView.isHidden = true
-    }
-    
-    func setSubviewClosure() -> Void {
-        
-        didPickCollectionClosure = { [weak self] in
-            guard let self = self else { return }
-            self.collectionSwitchButtonAction()
-            guard $0 != self.pickedAssetCollection else {
-                return
-            }
-            self.pickedAssetCollection = $0
-        }
-        
-        switch style {
-        case .multi(maxCount: _):
-            break
-        case .single(needCamera: _):
-            didPickImageClosure = { [weak self] in
-                guard let self = self else { return }
-                self.didPickPhotoClosure?([$0])
-            }
-        case .singleForCrop(ratio: _):
-            didPickImageClosure = { [weak self] in
-                guard let self = self else { return }
-                self.didPickPhotoClosure?([$0])
-            }
-        }
     }
     
     func updatePickedImageCount() -> Void {
@@ -276,10 +222,7 @@ class YCImagePickerHostViewController: UIViewController {
         collectionSwitchButton.layoutImageTitleHolizontallyCenterReverse(contentSpace: 5)
     }
     
-    override var prefersStatusBarHidden: Bool {
-        
-        return false
-    }
+    override var prefersStatusBarHidden: Bool { false }
     
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag, completion: completion)
@@ -294,7 +237,7 @@ extension YCImagePickerHostViewController: PHPhotoLibraryChangeObserver {
         DispatchQueue.main.async {
             self.collections = fetchAssetCollections()
             if self.collections.count > 0 {
-                if let temp = self.pickedAssetCollection {
+                if let temp = self.currentAssetCollection {
                     if let change = changeInstance.changeDetails(for: temp.fetchResult) {
 //                        print(change.insertedIndexes)
 //                        print(change.removedIndexes)
@@ -310,13 +253,13 @@ extension YCImagePickerHostViewController: PHPhotoLibraryChangeObserver {
                             //当前图片集合没有增减不做处理
                             return
                         }
-                        self.pickedAssetCollection = self.collections[0]
+                        self.currentAssetCollection = self.collections[0]
                     }
                 }else {
-                    self.pickedAssetCollection = self.collections[0]
+                    self.currentAssetCollection = self.collections[0]
                 }
             }else {
-                self.pickedAssetCollection = YCAssetCollection.init(collection: PHAssetCollection(), fetchResult: PHFetchResult<PHAsset>())
+                self.currentAssetCollection = YCAssetCollection.init(collection: PHAssetCollection(), fetchResult: PHFetchResult<PHAsset>())
             }
         }
     }
@@ -346,11 +289,23 @@ extension YCImagePickerHostViewController {
     
     @IBAction func multiSelectCompleteAction() {
         
-        let images = multiSelectPhotos
-        if images.count == 0 {
-            return
+        switch style {
+        case .multi(maxCount: _):
+            var result = [UIImage]()
+            if let selectIndexPaths = collectionView.indexPathsForSelectedItems {
+                for indexPath in selectIndexPaths.sorted(by: { $0.row < $1.row }) {
+                    if let image = imageCache[indexPath.item] {
+                        result.append(image)
+                    }
+                }
+            }
+            if result.count == 0 {
+                return
+            }
+            self.didPickPhotoClosure?(result)
+        default:
+            break
         }
-        self.didPickPhotoClosure?(images)
     }
 }
 
@@ -365,7 +320,7 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        guard let temp = collection else { return style.needCamera ? 1 : 0 }
+        guard let temp = currentAssetCollection else { return style.needCamera ? 1 : 0 }
         return style.needCamera ? temp.fetchResult.count + 1 : temp.fetchResult.count
     }
     
@@ -383,9 +338,10 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
         let needCamera = style.needCamera
         if needCamera && indexPath.item == 0 {
             cell.imageView.backgroundColor = UIColor.random
+            cell.imageView.image = nil
         }else {
-            guard let temp = collection else { return cell }
-            let index = needCamera ? indexPath.item + 1 : indexPath.item
+            guard let temp = currentAssetCollection else { return cell }
+            let index = needCamera ? indexPath.item - 1 : indexPath.item
             let asset = temp.fetchResult[index]
             imageManager.loadIconImage(asset: asset, targetSize: assetItemSize * UIScreen.main.scale, closure: { (image) in
                 cell.imageView.image = image
@@ -418,7 +374,7 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
         
         switch style {
         case .multi(maxCount: _):
-            guard let temp = collection else { return }
+            guard let temp = currentAssetCollection else { return }
             let asset = temp.fetchResult[indexPath.item]
             self.requestImage(asset: asset, showActivity: false, closure: {
                 switch $0 {
@@ -435,13 +391,13 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
             if needCamera && indexPath.item == 0 {
                 //打开摄像头
             }else {
-                let index = needCamera ? indexPath.item + 1 : indexPath.item
-                guard let temp = collection else { return }
+                let index = needCamera ? indexPath.item - 1 : indexPath.item
+                guard let temp = currentAssetCollection else { return }
                 let asset = temp.fetchResult[index]
                 self.requestImage(asset: asset, closure: {
                     switch $0 {
                     case .success(let image):
-                        self.didPickImageClosure?(image)
+                        self.didPickPhotoClosure?([image])
                     case .failure(let closure):
                         closure()
                     }
@@ -450,7 +406,7 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
         case .singleForCrop(ratio: let ratio):
             collectionView.deselectItem(at: indexPath, animated: true)
             let index = indexPath.item
-            guard let temp = collection else { return }
+            guard let temp = currentAssetCollection else { return }
             let asset = temp.fetchResult[index]
             self.requestImage(asset: asset, closure: {
                 switch $0 {
@@ -459,7 +415,7 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
                     temp.didCropClosure = { [weak temp] in
                         let image = $0.sub($1)
                         temp?.dismiss(animated: false, completion: {
-                            self.didPickImageClosure?(image)
+                            self.didPickPhotoClosure?([image])
                         })
                     }
                     self.present(temp, animated: false, completion: nil)
@@ -487,7 +443,7 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
     
     fileprivate func updateCachedAssets() {
         // Update only if the view is visible.
-        guard let temp = collection else { return }
+        guard let temp = currentAssetCollection else { return }
         
         // The preheat window is twice the height of the visible rect.
         let visibleRect = CGRect(origin: collectionView.contentOffset, size: collectionView.bounds.size)
@@ -501,10 +457,12 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
         let (addedRects, removedRects) = differencesBetweenRects(previousPreheatRect, preheatRect)
         let addedAssets = addedRects
             .flatMap { rect in collectionView.indexPathsForElements(in: rect) }
-            .map { indexPath in temp.fetchResult.object(at: indexPath.item) }
+            .filter({ style.needCamera ? $0.item != 0 : true })
+            .map { style.needCamera ? temp.fetchResult.object(at: $0.item - 1) : temp.fetchResult.object(at: $0.item) }
         let removedAssets = removedRects
             .flatMap { rect in collectionView.indexPathsForElements(in: rect) }
-            .map { indexPath in temp.fetchResult.object(at: indexPath.item) }
+            .filter({ style.needCamera ? $0.item != 0 : true })
+            .map { style.needCamera ? temp.fetchResult.object(at: $0.item - 1) : temp.fetchResult.object(at: $0.item) }
         
         // Update the assets the PHCachingImageManager is caching.
         imageManager.startCachingImages(for: addedAssets,
@@ -570,6 +528,7 @@ class YCImageAssetCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         imageView.clipsToBounds = true
         selectedImageView.isHidden = true
+        selectedImageView.image = getBundleImage( "unselected_icon")
     }
 }
 
@@ -609,9 +568,10 @@ extension YCImagePickerHostViewController: UITableViewDelegate, UITableViewDataS
         
         let iden = "iden"
         let cell = tableView.dequeueReusableCell(withIdentifier: iden) as! YCAssetCollectionTableCell
-        cell.nameLabel.text = collections[indexPath.row].collection.localizedTitle
-        cell.countLabel.text = "\(collections[indexPath.row].fetchResult.count)"
-        if let asset = collections[indexPath.row].fetchResult.firstObject {
+        let collection = collections[indexPath.row]
+        cell.nameLabel.text = collection.collection.localizedTitle
+        cell.countLabel.text = "\(collection.fetchResult.count)"
+        if let asset = collection.fetchResult.firstObject {
             PHImageManager.default().loadIconImage(asset: asset, targetSize: CGSize.init(width: 60, height: 60)*UIScreen.main.scale, closure: { (image) in
                 cell.reprImageView.image = image
             })
@@ -622,7 +582,12 @@ extension YCImagePickerHostViewController: UITableViewDelegate, UITableViewDataS
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: true)
-        didPickCollectionClosure?(collections[indexPath.row])
+        self.collectionSwitchButtonAction()
+        let collection = collections[indexPath.row]
+        guard collection != self.currentAssetCollection else {
+            return
+        }
+        self.currentAssetCollection = collection
     }
 }
 

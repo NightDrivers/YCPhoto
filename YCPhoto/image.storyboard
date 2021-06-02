@@ -112,23 +112,23 @@
                                     <outlet property="delegate" destination="y3L-Sv-jnu" id="C4q-5q-dtg"/>
                                 </connections>
                             </collectionView>
-                            <visualEffectView opaque="NO" contentMode="scaleToFill" id="tlL-vF-ZrY">
-                                <rect key="frame" x="0.0" y="44" width="414" height="808"/>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sCD-dz-sZ9">
+                                <rect key="frame" x="87" y="384" width="240" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="dBA-CC-Pi1">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="a2G-gq-whe">
+                                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="60" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="fHB-Bq-yUH">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
-                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="60" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="fHB-Bq-yUH">
+                                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <prototypes>
                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="iden" id="tVT-vi-qf6" customClass="YCAssetCollectionTableCell" customModule="YCPhoto">
-                                                    <rect key="frame" x="0.0" y="49.5" width="414" height="60"/>
+                                                    <rect key="frame" x="0.0" y="24.5" width="240" height="60"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="tVT-vi-qf6" id="h0E-eW-6gj">
-                                                        <rect key="frame" x="0.0" y="0.0" width="414" height="60"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="240" height="60"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="u9Y-vZ-FyB">
@@ -144,7 +144,7 @@
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ASC-kj-eea">
-                                                                <rect key="frame" x="360.5" y="0.0" width="41.5" height="60"/>
+                                                                <rect key="frame" x="186.5" y="0.0" width="41.5" height="60"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
@@ -178,13 +178,13 @@
                                         </tableView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="trailing" secondItem="fHB-Bq-yUH" secondAttribute="trailing" id="RQG-R3-tPN"/>
-                                        <constraint firstItem="fHB-Bq-yUH" firstAttribute="top" secondItem="dBA-CC-Pi1" secondAttribute="top" id="We0-RJ-SON"/>
-                                        <constraint firstItem="fHB-Bq-yUH" firstAttribute="leading" secondItem="dBA-CC-Pi1" secondAttribute="leading" id="f4t-3Q-NIy"/>
-                                        <constraint firstAttribute="bottom" secondItem="fHB-Bq-yUH" secondAttribute="bottom" id="jfI-ym-Dgi"/>
+                                        <constraint firstItem="fHB-Bq-yUH" firstAttribute="leading" secondItem="a2G-gq-whe" secondAttribute="leading" id="LYs-CM-X5E"/>
+                                        <constraint firstAttribute="bottom" secondItem="fHB-Bq-yUH" secondAttribute="bottom" id="OsU-k0-5n5"/>
+                                        <constraint firstItem="fHB-Bq-yUH" firstAttribute="top" secondItem="a2G-gq-whe" secondAttribute="top" id="sOo-Ih-r9Y"/>
+                                        <constraint firstAttribute="trailing" secondItem="fHB-Bq-yUH" secondAttribute="trailing" id="z33-cg-kIj"/>
                                     </constraints>
                                 </view>
-                                <blurEffect style="light"/>
+                                <blurEffect style="regular"/>
                             </visualEffectView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="lJ8-Rd-DUa"/>
@@ -204,7 +204,7 @@
                         <outlet property="collectionSwitchButton" destination="byt-E2-Si7" id="i58-Lo-Nem"/>
                         <outlet property="collectionView" destination="mYc-xk-4yI" id="tcG-xJ-SRo"/>
                         <outlet property="collectionViewFlowLayout" destination="dpu-d6-5uf" id="Fhn-MP-g9v"/>
-                        <outlet property="effectView" destination="tlL-vF-ZrY" id="zZO-5r-6ce"/>
+                        <outlet property="effectView" destination="sCD-dz-sZ9" id="S96-GO-Pcu"/>
                         <outlet property="multiSelectCompleteButton" destination="dgV-jT-1mL" id="tZJ-ak-PJ5"/>
                         <outlet property="tableView" destination="fHB-Bq-yUH" id="ISJ-L2-buX"/>
                         <outlet property="topView" destination="67X-PZ-BpS" id="CQf-C8-JKf"/>

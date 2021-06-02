@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="y3L-Sv-jnu">
-    <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
+    <device id="retina6_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
@@ -15,14 +15,14 @@
             <objects>
                 <viewController storyboardIdentifier="image.picker" id="y3L-Sv-jnu" customClass="YCImagePickerHostViewController" customModule="YCPhoto" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pKJ-KR-ISE">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="67X-PZ-BpS">
-                                <rect key="frame" x="0.0" y="0.0" width="768" height="50"/>
+                                <rect key="frame" x="0.0" y="44" width="428" height="44"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="byt-E2-Si7">
-                                        <rect key="frame" x="0.0" y="0.0" width="768" height="50"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="428" height="44"/>
                                         <state key="normal" title="Button">
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
@@ -31,7 +31,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q2c-zj-ASQ">
-                                        <rect key="frame" x="10" y="0.0" width="44" height="50"/>
+                                        <rect key="frame" x="10" y="0.0" width="44" height="44"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="44" id="iZ6-Kr-XqP"/>
                                         </constraints>
@@ -40,7 +40,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dgV-jT-1mL">
-                                        <rect key="frame" x="684" y="0.0" width="74" height="50"/>
+                                        <rect key="frame" x="344" y="0.0" width="74" height="44"/>
                                         <state key="normal" title="完成(0/1)">
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
@@ -67,7 +67,7 @@
                                 </constraints>
                             </view>
                             <collectionView autoresizesSubviews="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="mYc-xk-4yI">
-                                <rect key="frame" x="0.0" y="50" width="768" height="974"/>
+                                <rect key="frame" x="0.0" y="88" width="428" height="838"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="1" minimumInteritemSpacing="1" id="dpu-d6-5uf">
                                     <size key="itemSize" width="128" height="128"/>
@@ -127,14 +127,14 @@
                                             <color key="sectionIndexBackgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <prototypes>
                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="iden" id="tVT-vi-qf6" customClass="YCAssetCollectionTableCell" customModule="YCPhoto">
-                                                    <rect key="frame" x="0.0" y="24.5" width="240" height="90"/>
+                                                    <rect key="frame" x="0.0" y="24.333333969116211" width="240" height="60"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="tVT-vi-qf6" id="h0E-eW-6gj">
-                                                        <rect key="frame" x="0.0" y="0.0" width="240" height="90"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="240" height="60"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="u9Y-vZ-FyB">
-                                                                <rect key="frame" x="12" y="0.0" width="90" height="90"/>
+                                                                <rect key="frame" x="12" y="0.0" width="60" height="60"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="60" id="P9e-Gw-geB">
                                                                         <variation key="heightClass=regular-widthClass=regular" constant="90"/>
@@ -143,7 +143,7 @@
                                                                 </constraints>
                                                             </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0dG-cR-4pB">
-                                                                <rect key="frame" x="118" y="29.5" width="70.5" height="31"/>
+                                                                <rect key="frame" x="80" y="18.666666666666664" width="56" height="22.666666666666664"/>
                                                                 <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="16"/>
                                                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
@@ -152,7 +152,7 @@
                                                                 </variation>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ASC-kj-eea">
-                                                                <rect key="frame" x="188.5" y="34" width="35.5" height="22.5"/>
+                                                                <rect key="frame" x="200" y="22.333333333333332" width="28" height="15.666666666666668"/>
                                                                 <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="11"/>
                                                                 <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
@@ -226,6 +226,36 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cUu-jC-fD3" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="120" y="84"/>
+        </scene>
+        <!--Camera Host View Controller-->
+        <scene sceneID="w7J-fI-cxv">
+            <objects>
+                <viewController storyboardIdentifier="image.camera" id="uk5-vd-kkS" customClass="YCCameraHostViewController" customModule="YCPhoto" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="bST-SL-3Wd">
+                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9MM-lb-j6p" customClass="YCCameraImagePickerView" customModule="YCPhoto" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="0d2-Ku-DPy"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="0d2-Ku-DPy" firstAttribute="trailing" secondItem="9MM-lb-j6p" secondAttribute="trailing" id="2ce-1N-gZL"/>
+                            <constraint firstAttribute="bottom" secondItem="9MM-lb-j6p" secondAttribute="bottom" id="EiC-Lb-1fS"/>
+                            <constraint firstItem="9MM-lb-j6p" firstAttribute="top" secondItem="bST-SL-3Wd" secondAttribute="top" id="YUg-2T-gWO"/>
+                            <constraint firstItem="9MM-lb-j6p" firstAttribute="leading" secondItem="0d2-Ku-DPy" secondAttribute="leading" id="g4E-PO-8PS"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="cameraPickerView" destination="9MM-lb-j6p" id="OFE-ol-03a"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4pK-xb-PTs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-144" y="722"/>
         </scene>
     </scenes>
     <resources>

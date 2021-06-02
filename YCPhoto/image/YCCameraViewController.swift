@@ -26,12 +26,14 @@ extension UIView {
 
 public class YCCameraViewController: UINavigationController {
     
-    public var didPickPhotoClosure: ((UIImage) -> Void)?
+    public var didPickPhotoClosure: (([UIImage]) -> Void)?
     
     private let hostViewController: YCCameraHostViewController
     
     public init(with cropMode: YCCropMode = .noCrop, supply view: UIView? = nil) {
-        self.hostViewController = YCCameraHostViewController.init(with: cropMode, supply: view)
+        self.hostViewController = ViewControllerFromStoryboard(file: "image", iden: "image.camera") as! YCCameraHostViewController
+        self.hostViewController.cropMode = cropMode
+        self.hostViewController.cameraSupplyView = view
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .fullScreen
         self.setNavigationBarHidden(true, animated: false)
@@ -40,7 +42,7 @@ public class YCCameraViewController: UINavigationController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        self.hostViewController.didPickImageClosure = { [weak self] in
+        self.hostViewController.didPickPhotoClosure = { [weak self] in
             self?.didPickPhotoClosure?($0)
         }
     }
@@ -50,29 +52,20 @@ public class YCCameraViewController: UINavigationController {
     }
 }
 
-private class YCCameraHostViewController: UIViewController {
+class YCCameraHostViewController: UIViewController {
     
-    var didPickImageClosure: ((UIImage) -> Void)?
+    @IBOutlet weak var cameraPickerView: YCCameraImagePickerView!
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    var didPickPhotoClosure: (([UIImage]) -> Void)?
     
-    let cropMode: YCCropMode
-    let cameraSupplyView: UIView?
-    
-    init(with cropMode: YCCropMode, supply view: UIView? = nil) {
-        self.cropMode = cropMode
-        self.cameraSupplyView = view
-        super.init(nibName: nil, bundle: nil)
-        modalPresentationStyle = .fullScreen
-    }
+    var cropMode: YCCropMode = .noCrop
+    var cameraSupplyView: UIView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor.white
-        makeConstraint()
+        configureCameraView()
         YCMotionOrientationManager.shared.startAccelerometerUpdates()
     }
     
@@ -93,22 +86,17 @@ private class YCCameraHostViewController: UIViewController {
         }
     }
     
-    func makeConstraint() -> Void {
+    func configureCameraView() {
         
-        cameraPickerView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-    }
-    
-    func setCameraPickerViewClosure(pickerView: YCCameraImagePickerView) -> Void {
+        cameraPickerView.supplyView = cameraSupplyView
         
-        pickerView.didCapturePhotoClosure = { [weak self] in
+        cameraPickerView.didCapturePhotoClosure = { [weak self] in
             
             guard let self = self else { return }
-            self.didTakePhotoAction($0, target: self, closure: { self.didPickImageClosure?($0) })
+            self.didTakePhotoAction($0, target: self, closure: { self.didPickPhotoClosure?([$0]) })
         }
         
-        pickerView.didTouchButtonClosure = { [weak self] in
+        cameraPickerView.didTouchButtonClosure = { [weak self] in
             
             guard let self = self else { return }
             switch $0 {
@@ -123,7 +111,7 @@ private class YCCameraHostViewController: UIViewController {
                         self.didTakePhotoAction(images[0], target: temp, closure: {
                             let image = $0
                             temp.dismiss(animated: false, completion: {
-                                self.didPickImageClosure?(image)
+                                self.didPickPhotoClosure?([image])
                             })
                         })
                     }
@@ -137,13 +125,6 @@ private class YCCameraHostViewController: UIViewController {
         
         return true
     }
-    
-    lazy var cameraPickerView: YCCameraImagePickerView = {
-        let temp = YCCameraImagePickerView.init(supply: cameraSupplyView)
-        setCameraPickerViewClosure(pickerView: temp)
-        view.addSubview(temp)
-        return temp
-    }()
     
     deinit {
         YCMotionOrientationManager.shared.stopAccelerometerUpdates()
@@ -169,16 +150,15 @@ class YCCameraImagePickerView: UIView {
         }
     }
     
-    let supplyView: UIView?
-    
-    init(supply view: UIView? = nil) {
-        self.supplyView = view
-        super.init(frame: .zero)
-        makeConstraint()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    var supplyView: UIView? {
+        
+        didSet {
+            if let old = oldValue {
+                old.snp.removeConstraints()
+                old.removeFromSuperview()
+            }
+            makeConstraint()
+        }
     }
     
     func makeConstraint() -> Void {
@@ -292,7 +272,7 @@ class YCCameraView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func makeConstraint() -> Void {
+    private func makeConstraint() -> Void {
         
         videoCaptureView.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -331,13 +311,13 @@ class YCCameraView: UIView {
     }()
     
     @available(iOS 10.0, *)
-    lazy var photoOutput: AVCapturePhotoOutput = {
+    private lazy var photoOutput: AVCapturePhotoOutput = {
         let temp = AVCapturePhotoOutput()
         temp.isHighResolutionCaptureEnabled = true
         return temp
     }()
     
-    lazy var stillImageOutput: AVCaptureStillImageOutput = {
+    private lazy var stillImageOutput: AVCaptureStillImageOutput = {
         let temp = AVCaptureStillImageOutput()
         temp.isHighResolutionStillImageOutputEnabled = true
         temp.outputSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
@@ -367,7 +347,11 @@ extension YCCameraView: AVCapturePhotoCaptureDelegate {
 class YCVideoCaptureSessionView: UIView {
     
     private let session: AVCaptureSession
-    let previewLayer: AVCaptureVideoPreviewLayer
+    
+    private let previewLayer: AVCaptureVideoPreviewLayer
+    
+    private var captureDevice: AVCaptureDevice?
+    
     var output: AVCaptureOutput? {
         
         didSet {
@@ -377,7 +361,6 @@ class YCVideoCaptureSessionView: UIView {
             }
         }
     }
-    private var captureDevice: AVCaptureDevice?
     
     override init(frame: CGRect) {
         

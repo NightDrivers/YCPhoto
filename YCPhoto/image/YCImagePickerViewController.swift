@@ -205,6 +205,8 @@ class YCImagePickerHostViewController: UIViewController {
             collectionView.allowsMultipleSelection = false
             multiSelectCompleteButton.isHidden = true
         }
+        
+        view.addSubview(effectView)
         effectView.snp.makeConstraints {
             $0.left.right.bottom.equalToSuperview()
             $0.top.equalTo(topView.snp.bottom)

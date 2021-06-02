@@ -10,7 +10,7 @@ import Foundation
 import Photos
 import BaseKitSwift
 
-extension PHImageManager {
+public extension PHImageManager {
     
     @discardableResult
     func loadIconImage(asset: PHAsset, targetSize: CGSize, closure: ((UIImage?) -> Void)?) -> PHImageRequestID {
@@ -25,21 +25,21 @@ extension PHImageManager {
     }
 }
 
-enum YCAssetRequestResult {
+public enum YCAssetRequestResult {
     case success(AVAsset)
     case isInCloud
     case system(Error)
     case unknown
 }
 
-enum YCImageRequestResult {
+public enum YCImageRequestResult {
     case success(UIImage)
     case isInCloud
     case system(Error)
     case unknown
 }
 
-extension PHImageManager {
+public extension PHImageManager {
     
     func h_requestImage(asset: PHAsset, closure: @escaping (YCImageRequestResult) -> Void) -> Void {
         
@@ -174,17 +174,17 @@ extension PHImageManager {
     }
 }
 
-enum YCResult<Success, Failure> {
+public enum YCResult<Success, Failure> {
     case success(Success)
     case failure(Failure)
 }
 
-extension UIViewController {
+public extension UIViewController {
     
     func requestImage(asset: PHAsset, showActivity: Bool = true, closure: @escaping (YCResult<UIImage, () -> Void>) -> Void) -> Void {
         
         if showActivity {
-            Config.Progress.showStatusClosure?("图片加载中...".localized)
+            Config.Progress.showStatusClosure?("图片加载中...".yc_localized)
         }
         PHImageManager.default().h_requestImage(asset: asset, closure: {
             if showActivity {
@@ -195,9 +195,9 @@ extension UIViewController {
                 closure(.success(image))
             case .isInCloud:
                 self.bk_presentDecisionAlertController(
-                    title: "提示".localized, 
-                    message: "是否下载iCloud图片?".localized, 
-                    decisionTitle: "确定".localized, 
+                    title: "提示".yc_localized, 
+                    message: "是否下载iCloud图片?".yc_localized, 
+                    decisionTitle: "确定".yc_localized, 
                     decisionClosure: { (_) in
                         self.requestCloudImage(asset: asset, closure: closure)
                     }, cancelClosure: { _ in
@@ -206,11 +206,11 @@ extension UIViewController {
             case .system(let error):
                 closure(.failure({ 
                     let error = error as NSError
-                    self.bk_presentWarningAlertController(title: "提示".localized, message: String.init(format: "图片加载失败-%@-%i".localized, error.domain, error.code))
+                    self.bk_presentWarningAlertController(title: "提示".yc_localized, message: String.init(format: "图片加载失败-%@-%i".yc_localized, error.domain, error.code))
                 }))
             case .unknown:
                 closure(.failure({ 
-                    self.bk_presentWarningAlertController(title: "提示".localized, message: "图片加载失败-未知错误".localized)
+                    self.bk_presentWarningAlertController(title: "提示".yc_localized, message: "图片加载失败-未知错误".yc_localized)
                 }))
             }
         })
@@ -218,9 +218,9 @@ extension UIViewController {
     
     func requestCloudImage(asset: PHAsset, closure: @escaping (YCResult<UIImage, () -> Void>) -> Void) -> Void {
         
-        Config.Progress.showProgressClosure?(0, "图片下载中...".localized)
+        Config.Progress.showProgressClosure?(0, "图片下载中...".yc_localized)
         PHImageManager.default().h_requestCloudImage(asset: asset, progressClosure: {
-            Config.Progress.showProgressClosure?($0, "图片下载中...".localized)
+            Config.Progress.showProgressClosure?($0, "图片下载中...".yc_localized)
         }, closure: {
             Config.Progress.dismissClosure?()
             switch $0 {
@@ -231,11 +231,11 @@ extension UIViewController {
             case .system(let error):
                 closure(.failure({ 
                     let error = error as NSError
-                    self.bk_presentWarningAlertController(title: "提示".localized, message: String.init(format: "图片下载失败-%@-%i".localized, error.domain, error.code))
+                    self.bk_presentWarningAlertController(title: "提示".yc_localized, message: String.init(format: "图片下载失败-%@-%i".yc_localized, error.domain, error.code))
                 }))
             case .unknown:
                 closure(.failure({ 
-                    self.bk_presentWarningAlertController(title: "提示".localized, message: "图片下载失败-未知错误".localized)
+                    self.bk_presentWarningAlertController(title: "提示".yc_localized, message: "图片下载失败-未知错误".yc_localized)
                 }))
             }
         })
@@ -244,7 +244,7 @@ extension UIViewController {
     func h_requestAVAsset(asset: PHAsset, showActivity: Bool = true, closure: @escaping (YCResult<AVAsset, () -> Void>) -> Void) -> Void {
         
         if showActivity {
-            Config.Progress.showStatusClosure?("视频加载中...".localized)
+            Config.Progress.showStatusClosure?("视频加载中...".yc_localized)
         }
         PHImageManager.default().h_requestAVAsset(asset: asset, closure: {
             if showActivity {
@@ -255,9 +255,9 @@ extension UIViewController {
                 closure(.success(image))
             case .isInCloud:
                 self.bk_presentDecisionAlertController(
-                    title: "提示".localized, 
-                    message: "是否下载iCloud视频?".localized, 
-                    decisionTitle: "确定".localized, 
+                    title: "提示".yc_localized, 
+                    message: "是否下载iCloud视频?".yc_localized, 
+                    decisionTitle: "确定".yc_localized, 
                     decisionClosure: { (_) in
                         self.h_requestCloudAVAsset(asset: asset, closure: closure)
                     }, cancelClosure: { _ in
@@ -266,11 +266,11 @@ extension UIViewController {
             case .system(let error):
                 closure(.failure({ 
                     let error = error as NSError
-                    self.bk_presentWarningAlertController(title: "提示".localized, message: String.init(format: "视频加载失败-%@-%i".localized, error.domain, error.code))
+                    self.bk_presentWarningAlertController(title: "提示".yc_localized, message: String.init(format: "视频加载失败-%@-%i".yc_localized, error.domain, error.code))
                 }))
             case .unknown:
                 closure(.failure({ 
-                    self.bk_presentWarningAlertController(title: "提示".localized, message: "视频加载失败-未知错误".localized)
+                    self.bk_presentWarningAlertController(title: "提示".yc_localized, message: "视频加载失败-未知错误".yc_localized)
                 }))
             }
         })
@@ -278,9 +278,9 @@ extension UIViewController {
     
     func h_requestCloudAVAsset(asset: PHAsset, closure: @escaping (YCResult<AVAsset, () -> Void>) -> Void) -> Void {
         
-        Config.Progress.showProgressClosure?(0, "视频下载中...".localized)
+        Config.Progress.showProgressClosure?(0, "视频下载中...".yc_localized)
         PHImageManager.default().h_requestCloudAVAsset(asset: asset, progressClosure: {
-            Config.Progress.showProgressClosure?($0, "视频下载中...".localized)
+            Config.Progress.showProgressClosure?($0, "视频下载中...".yc_localized)
         }, closure: {
             Config.Progress.dismissClosure?()
             switch $0 {
@@ -291,11 +291,11 @@ extension UIViewController {
             case .system(let error):
                 closure(.failure({ 
                     let error = error as NSError
-                    self.bk_presentWarningAlertController(title: "提示".localized, message: String.init(format: "视频下载失败-%@-%i".localized, error.domain, error.code))
+                    self.bk_presentWarningAlertController(title: "提示".yc_localized, message: String.init(format: "视频下载失败-%@-%i".yc_localized, error.domain, error.code))
                 }))
             case .unknown:
                 closure(.failure({ 
-                    self.bk_presentWarningAlertController(title: "提示".localized, message: "视频下载失败-未知错误".localized)
+                    self.bk_presentWarningAlertController(title: "提示".yc_localized, message: "视频下载失败-未知错误".yc_localized)
                 }))
             }
         })

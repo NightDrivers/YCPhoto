@@ -18,12 +18,6 @@ public struct Config {
         
         public static var showProgressClosure: ((Double, String?) -> Void)?
     }
-    
-    public static var boldFont: ((CGFloat) -> UIFont)?
-    
-    public static var mediumFont: ((CGFloat) -> UIFont)?
-    
-    public static var regularFont: ((CGFloat) -> UIFont)?
 }
 
 func getBundleImage(_ name: String) -> UIImage? {
@@ -42,4 +36,16 @@ var FrameworkBundle: Bundle = {
 func ViewControllerFromStoryboard(file name: String, iden: String) -> UIViewController {
     
     return UIStoryboard.init(name: name, bundle: FrameworkBundle).instantiateViewController(withIdentifier: iden)
+}
+
+extension String {
+    
+    var yc_localized: String {
+        
+        var result = FrameworkBundle.localizedString(forKey: self, value: nil, table: nil)
+        if result.isEmpty {
+            result = FrameworkBundle.localizedString(forKey: self, value: nil, table: "en.lproj/Localizable")
+        }
+        return result
+    }
 }

@@ -14,13 +14,13 @@ import CoreMotion
 typealias YCDeviceOrientationHandler = (UIDeviceOrientation) -> Swift.Void
 typealias YCInterfaceOrientationHandler = (UIInterfaceOrientation) -> Swift.Void
 
-extension YCMotionOrientationManager {
+public extension YCMotionOrientationManager {
     
     static let deviceOrientationDidChangeNotification = Notification.Name.init(rawValue: "YCMotionOrientationManager.device.orientation.did.change")
 }
 
 //MARK: 当iPhone锁定屏幕朝向后，系统的UIDevice.orientationDidChangeNotification无法生效，只好用这个了
-class YCMotionOrientationManager: NSObject{
+public class YCMotionOrientationManager: NSObject{
     static let shared =  YCMotionOrientationManager()
     
     // MARK: - Variables

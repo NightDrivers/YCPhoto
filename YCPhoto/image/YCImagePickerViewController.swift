@@ -183,7 +183,7 @@ class YCImagePickerHostViewController: UIViewController {
     
     func configure() -> Void {
         
-        multiSelectCompleteButton.setTitle("0/\(style.maxCount)\("完成".localized)", for: .normal)
+        updatePickedImageCount()
         collectionSwitchButton.setTitle(currentAssetCollection?.collection.localizedTitle, for: .normal)
         collectionSwitchButton.setImage(getBundleImage("btn_icon_arrow_down"), for: .normal)
         collectionSwitchButton.setImage(getBundleImage("btn_icon_arrow_up"), for: .selected)
@@ -217,7 +217,7 @@ class YCImagePickerHostViewController: UIViewController {
         switch style {
         case .multi(maxCount: let count):
             let selectedCount = collectionView.indexPathsForSelectedItems != nil ? collectionView.indexPathsForSelectedItems!.count : 0
-            self.multiSelectCompleteButton.setTitle(String.init(format: "%i/%i完成".localized, selectedCount, count), for: .normal)
+            self.multiSelectCompleteButton.setTitle(String.init(format: "%i/%i完成".yc_localized, selectedCount, count), for: .normal)
         default:
             break
         }

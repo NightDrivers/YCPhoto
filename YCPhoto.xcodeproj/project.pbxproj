@@ -24,6 +24,7 @@
 		63EED04A262443380086227C /* YCImageCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63EED046262443380086227C /* YCImageCropViewController.swift */; };
 		63EED05626244A3A0086227C /* PHImageManager+load.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63EED05526244A3A0086227C /* PHImageManager+load.swift */; };
 		63EED05926244B3F0086227C /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63EED05826244B3F0086227C /* Config.swift */; };
+		63F7B36E2665BE100017A336 /* image.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63F7B36D2665BE100017A336 /* image.storyboard */; };
 		8998AE1507496B74D8434FB2 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B604DFD0E922944EBFA8E630 /* Pods_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +74,7 @@
 		63EED046262443380086227C /* YCImageCropViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YCImageCropViewController.swift; sourceTree = "<group>"; };
 		63EED05526244A3A0086227C /* PHImageManager+load.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PHImageManager+load.swift"; sourceTree = "<group>"; };
 		63EED05826244B3F0086227C /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		63F7B36D2665BE100017A336 /* image.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = image.storyboard; sourceTree = "<group>"; };
 		77D4FC6434879BB2AD932D2E /* Pods-YCPhoto.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YCPhoto.release.xcconfig"; path = "Target Support Files/Pods-YCPhoto/Pods-YCPhoto.release.xcconfig"; sourceTree = "<group>"; };
 		B604DFD0E922944EBFA8E630 /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6003082D3305806AED4B984 /* Pods_YCPhoto.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YCPhoto.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -139,6 +141,7 @@
 				63EED042262443380086227C /* image */,
 				63EED01B262441AB0086227C /* Info.plist */,
 				63EED05826244B3F0086227C /* Config.swift */,
+				63F7B36D2665BE100017A336 /* image.storyboard */,
 				63BAC29226268F1100062898 /* YCPhoto.bundle */,
 			);
 			path = YCPhoto;
@@ -290,6 +293,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63F7B36E2665BE100017A336 /* image.storyboard in Resources */,
 				63BAC29326268F1100062898 /* YCPhoto.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

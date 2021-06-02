@@ -38,3 +38,8 @@ var FrameworkBundle: Bundle = {
     
     return Bundle.init(for: YCImagePickerViewController.self)
 }()
+
+func ViewControllerFromStoryboard(file name: String, iden: String) -> UIViewController {
+    
+    return UIStoryboard.init(name: name, bundle: FrameworkBundle).instantiateViewController(withIdentifier: iden)
+}

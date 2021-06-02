@@ -189,7 +189,13 @@ class YCImagePickerHostViewController: UIViewController {
         collectionSwitchButton.setImage(getBundleImage("btn_icon_arrow_up"), for: .selected)
         closeButton.setImage(getBundleImage("btn_close"), for: .normal)
         
-        let w = floor((UIScreen.main.bounds.width - 3)/3)
+        let w: CGFloat
+        switch UIDevice.current.userInterfaceIdiom {
+        case .pad:
+            w = floor((UIScreen.main.bounds.width - 4)/4)
+        default:
+            w = floor((UIScreen.main.bounds.width - 3)/3)
+        }
         collectionViewFlowLayout.itemSize = CGSize.init(width: w, height: w)
         switch style {
         case .multi(maxCount: _):
@@ -602,7 +608,5 @@ class YCAssetCollectionTableCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         reprImageView.clipsToBounds = true
-        nameLabel.font = Config.regularFont?(16)
-        countLabel.font = Config.regularFont?(11)
     }
 }

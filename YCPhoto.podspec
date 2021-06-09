@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
   s.author       = { "NightDriver" => "lin_de_chun@sina.com" }
   s.source       = { :git => "ssh://lindc@10.10.2.2:29418/~lindc/HLogin.git", :tag => "#{s.version}" }
-  s.source_files  = "YCPhoto/video/*.swift", "YCPhoto/*.swift"
+  s.source_files  = "YCPhoto/*/*.swift", "YCPhoto/*.swift"
   s.resource_bundles = {
     "Localizable" => [""]
   }

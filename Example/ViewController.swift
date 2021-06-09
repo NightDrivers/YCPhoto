@@ -47,6 +47,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIStoryboardSegue
         // Do any additional setup after loading the view.
         Config.Progress.showProgressClosure = { SVProgressHUD.showProgress(Float($0), status: $1) }
         Config.Progress.showStatusClosure = { SVProgressHUD.show(withStatus: $0) }

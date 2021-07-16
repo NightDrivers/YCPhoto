@@ -420,8 +420,8 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
                 switch $0 {
                 case .success(let image):
                     let temp = YCImageCropViewController.init(image: image, cropMode: .fixableCrop(ratio), rotatable: true)
-                    temp.didCropClosure = { [weak temp] in
-                        let image = $0.sub($1)
+                    temp.didCropClosure = { [weak temp] (image, _) in
+                        let image = image
                         temp?.dismiss(animated: false, completion: {
                             self.didPickPhotoClosure?([image])
                         })

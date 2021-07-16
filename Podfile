@@ -7,6 +7,7 @@ target 'YCPhoto' do
 
   # Pods for YCPhoto
   pod 'BaseKitSwift', :git => 'ssh://lindc@10.10.2.2:29418/~lindc/BaseKitSwift.git'
+  pod 'TOCropViewController'
 end
 
 target 'Example' do
@@ -16,5 +17,6 @@ target 'Example' do
   # Pods for YCPhoto
   pod 'BaseKitSwift', :git => 'ssh://lindc@10.10.2.2:29418/~lindc/BaseKitSwift.git'
   pod 'SVProgressHUD'
+  pod 'TOCropViewController'
 end
 

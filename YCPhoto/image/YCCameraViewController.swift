@@ -76,8 +76,8 @@ class YCCameraHostViewController: UIViewController {
             closure(image)
         case .fixableCrop, .flexibleCrop:
             let temp = YCImageCropViewController.init(image: image, cropMode: self.cropMode, rotatable: true)
-            temp.didCropClosure = { [weak temp] in
-                let image = $0.sub($1)
+            temp.didCropClosure = { [weak temp] (image, _) in
+                let image = image
                 temp?.dismiss(animated: false, completion: {
                     closure(image)
                 })

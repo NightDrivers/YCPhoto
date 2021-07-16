@@ -47,7 +47,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        UIStoryboardSegue
+        
         // Do any additional setup after loading the view.
         Config.Progress.showProgressClosure = { SVProgressHUD.showProgress(Float($0), status: $1) }
         Config.Progress.showStatusClosure = { SVProgressHUD.show(withStatus: $0) }
@@ -91,7 +91,7 @@ class ViewController: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
 //        let temp = YCImagePickerViewController.init(style: .single(needCamera: false))
-        let temp = YCCameraViewController.init(with: .flexibleCrop(1), supply: nil)
+        let temp = YCCameraViewController.init(with: .fixableCrop(1), supply: nil)
         temp.didPickPhotoClosure = { [weak temp] in
             let image = $0[0]
             temp?.dismiss(animated: true, completion: {

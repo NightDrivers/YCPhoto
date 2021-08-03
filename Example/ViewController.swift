@@ -91,7 +91,8 @@ class ViewController: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
 //        let temp = YCImagePickerViewController.init(style: .single(needCamera: false))
-        let temp = YCCameraViewController.init(with: .fixableCrop(1), supply: nil)
+        let temp = YCImagePickerViewController.init(style: .single(needCamera: true, cropMode: .noCrop))
+//        let temp = YCCameraViewController.init(with: .flexibleCrop(1), supply: nil)
         temp.didPickPhotoClosure = { [weak temp] in
             let image = $0[0]
             temp?.dismiss(animated: true, completion: {

@@ -12,7 +12,19 @@ import BaseKitSwift
 
 public class YCImagePickerViewController: UINavigationController {
     
-    public var didPickPhotoClosure: (([UIImage]) -> Void)?
+    public var didPickPhotoClosure: (([UIImage]) -> Void)? {
+        
+        didSet {
+            imagePickerHostViewController.didPickPhotoClosure = didPickPhotoClosure
+        }
+    }
+    
+    public var didSelectImageClosure: ((UIImage) -> Void)? {
+        
+        didSet {
+            imagePickerHostViewController.didSelectImageClosure = didSelectImageClosure
+        }
+    }
     
     private let imagePickerHostViewController: YCImagePickerHostViewController
     
@@ -27,9 +39,8 @@ public class YCImagePickerViewController: UINavigationController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        self.imagePickerHostViewController.didPickPhotoClosure = { [weak self] in
-            self?.didPickPhotoClosure?($0)
-        }
+        self.imagePickerHostViewController.didPickPhotoClosure = didPickPhotoClosure
+        self.imagePickerHostViewController.didSelectImageClosure = didSelectImageClosure
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -89,22 +100,19 @@ func fetchAssetCollections() -> [YCAssetCollection] {
 }
 
 public enum YCImagePickerStyle {
-    case single(needCamera: Bool)
+    case single(needCamera: Bool, cropMode: YCCropMode)
     case multi(maxCount: Int)
-    case singleForCrop(ratio: CGFloat)
     
     var needCamera: Bool {
         
         switch self {
-        case .single(needCamera: let needCamera):
+        case .single(needCamera: let needCamera, _):
             if needCamera {
                 return true
             }else {
                 return false
             }
         case .multi(maxCount: _):
-            return false
-        case .singleForCrop(ratio: _):
             return false
         }
     }
@@ -116,8 +124,16 @@ public enum YCImagePickerStyle {
             return 1
         case .multi(maxCount: let count):
             return count
-        case .singleForCrop(ratio: _):
-            return 1
+        }
+    }
+    
+    var cropMode: YCCropMode {
+        
+        switch self {
+        case .multi(maxCount: _):
+            return .noCrop
+        case .single(needCamera: _, cropMode: let cropMode):
+            return cropMode
         }
     }
 }
@@ -148,7 +164,7 @@ class YCImagePickerHostViewController: UIViewController {
     
     var imageCache = [Int : UIImage]()
     
-    var style: YCImagePickerStyle = .single(needCamera: false)
+    var style: YCImagePickerStyle = .single(needCamera: false, cropMode: .noCrop)
     
     var collections: [YCAssetCollection] = [] {
         
@@ -167,6 +183,8 @@ class YCImagePickerHostViewController: UIViewController {
     }
     
     var didPickPhotoClosure: (([UIImage]) -> Void)?
+    
+    var didSelectImageClosure: ((UIImage) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -338,15 +356,13 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
         switch style {
         case .multi(maxCount: _):
             cell.selectable = true
-        case .single(needCamera: _):
-            cell.selectable = false
-        case .singleForCrop(ratio: _):
+        case .single(needCamera: _, _):
             cell.selectable = false
         }
         let needCamera = style.needCamera
         if needCamera && indexPath.item == 0 {
-            cell.imageView.backgroundColor = UIColor.random
-            cell.imageView.image = nil
+            cell.imageView.image = getBundleImage("takePicture")
+            cell.imageView.contentMode = .scaleAspectFill
         }else {
             guard let temp = currentAssetCollection else { return cell }
             let index = needCamera ? indexPath.item - 1 : indexPath.item
@@ -387,6 +403,7 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
             self.requestImage(asset: asset, showActivity: false, closure: {
                 switch $0 {
                 case .success(let image):
+                    self.didSelectImageClosure?(image)
                     self.imageCache[indexPath.item] = image
                     self.updatePickedImageCount()
                 case .failure(let closure):
@@ -394,10 +411,25 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
                     closure()
                 }
             })
-        case .single(needCamera: let needCamera):
+        case .single(needCamera: let needCamera, cropMode: let cropMode):
             collectionView.deselectItem(at: indexPath, animated: true)
             if needCamera && indexPath.item == 0 {
                 //打开摄像头
+                AVCaptureDevice.requestCameraAuthorization {
+                    let temp = YCCameraViewController.init(with: cropMode, supply: nil)
+                    temp.didPickPhotoClosure = { [weak temp] (images) in
+                        guard let temp = temp else { return }
+                        let image = images[0]
+                        temp.dismiss(animated: false, completion: {
+                            self.didSelectImageClosure?(image)
+                            self.didPickPhotoClosure?([image])
+                        })
+                    }
+                    temp.openPhotoLibraryClosure = { [weak temp] in
+                        temp?.dismiss(animated: true, completion: nil)
+                    }
+                    self.present(temp, animated: true, completion: nil)
+                }
             }else {
                 let index = needCamera ? indexPath.item - 1 : indexPath.item
                 guard let temp = currentAssetCollection else { return }
@@ -405,32 +437,15 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
                 self.requestImage(asset: asset, closure: {
                     switch $0 {
                     case .success(let image):
-                        self.didPickPhotoClosure?([image])
+                        self.didTakePhotoAction(image, target: self, closure: {
+                            self.didSelectImageClosure?(image)
+                            self.didPickPhotoClosure?([$0])
+                        })
                     case .failure(let closure):
                         closure()
                     }
                 })
             }
-        case .singleForCrop(ratio: let ratio):
-            collectionView.deselectItem(at: indexPath, animated: true)
-            let index = indexPath.item
-            guard let temp = currentAssetCollection else { return }
-            let asset = temp.fetchResult[index]
-            self.requestImage(asset: asset, closure: {
-                switch $0 {
-                case .success(let image):
-                    let temp = YCImageCropViewController.init(image: image, cropMode: .fixableCrop(ratio), rotatable: true)
-                    temp.didCropClosure = { [weak temp] (image, _) in
-                        let image = image
-                        temp?.dismiss(animated: false, completion: {
-                            self.didPickPhotoClosure?([image])
-                        })
-                    }
-                    self.present(temp, animated: false, completion: nil)
-                case .failure(let closure):
-                    closure()
-                }
-            })
         }
     }
     
@@ -505,6 +520,23 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
             return (added, removed)
         } else {
             return ([new], [old])
+        }
+    }
+    
+    func didTakePhotoAction(_ image: UIImage, target: UIViewController, closure: @escaping (UIImage) -> Void) -> Void {
+        
+        switch style.cropMode {
+        case .noCrop:
+            closure(image)
+        case .fixableCrop, .flexibleCrop:
+            let temp = YCImageCropViewController.init(image: image, cropMode: style.cropMode, rotatable: true)
+            temp.didCropClosure = { [weak temp] (image, _) in
+                let image = image
+                temp?.dismiss(animated: false, completion: {
+                    closure(image)
+                })
+            }
+            target.present(temp, animated: false, completion: nil)
         }
     }
 }

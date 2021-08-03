@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "YCPhoto"
-  s.version      = "1.0.1"
+  s.version      = "1.0.2"
   s.summary      = "图片选择器"
   s.swift_version = "5.0"
   s.description  = <<-DESC

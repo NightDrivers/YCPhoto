@@ -26,7 +26,19 @@ extension UIView {
 
 public class YCCameraViewController: UINavigationController {
     
-    public var didPickPhotoClosure: (([UIImage]) -> Void)?
+    public var didPickPhotoClosure: (([UIImage]) -> Void)? {
+        
+        didSet {
+            hostViewController.didPickPhotoClosure = didPickPhotoClosure
+        }
+    }
+    
+    public var openPhotoLibraryClosure: (() -> Void)? {
+        
+        didSet {
+            hostViewController.openPhotoLibraryClosure = openPhotoLibraryClosure
+        }
+    }
     
     private let hostViewController: YCCameraHostViewController
     
@@ -42,9 +54,8 @@ public class YCCameraViewController: UINavigationController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        self.hostViewController.didPickPhotoClosure = { [weak self] in
-            self?.didPickPhotoClosure?($0)
-        }
+        self.hostViewController.didPickPhotoClosure = didPickPhotoClosure
+        self.hostViewController.openPhotoLibraryClosure = openPhotoLibraryClosure
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -57,6 +68,8 @@ class YCCameraHostViewController: UIViewController {
     @IBOutlet weak var cameraPickerView: YCCameraImagePickerView!
     
     var didPickPhotoClosure: (([UIImage]) -> Void)?
+    
+    var openPhotoLibraryClosure: (() -> Void)?
     
     var cropMode: YCCropMode = .noCrop
     var cameraSupplyView: UIView?
@@ -82,6 +95,9 @@ class YCCameraHostViewController: UIViewController {
                     closure(image)
                 })
             }
+            temp.didCancelClosure = {
+                self.cameraPickerView.cameraView.videoCaptureView.session.startRunning()
+            }
             target.present(temp, animated: false, completion: nil)
         }
     }
@@ -93,7 +109,10 @@ class YCCameraHostViewController: UIViewController {
         cameraPickerView.didCapturePhotoClosure = { [weak self] in
             
             guard let self = self else { return }
-            self.didTakePhotoAction($0, target: self, closure: { self.didPickPhotoClosure?([$0]) })
+            self.cameraPickerView.cameraView.videoCaptureView.session.stopRunning()
+            self.didTakePhotoAction($0, target: self, closure: { 
+                self.didPickPhotoClosure?([$0]) 
+            })
         }
         
         cameraPickerView.didTouchButtonClosure = { [weak self] in
@@ -104,18 +123,20 @@ class YCCameraHostViewController: UIViewController {
                 self.dismiss(animated: true, completion: nil)
             case .photoLibrary:
                 //弹出相片选择器
-                PHPhotoLibrary.requestPhotoAuthorization {
-                    let temp = YCImagePickerViewController.init(style: .single(needCamera: false))
-                    temp.didPickPhotoClosure = { [weak temp] (images) in
-                        guard let temp = temp else { return }
-                        self.didTakePhotoAction(images[0], target: temp, closure: {
-                            let image = $0
+                if let closure = self.openPhotoLibraryClosure {
+                    closure()
+                }else {
+                    PHPhotoLibrary.requestPhotoAuthorization {
+                        let temp = YCImagePickerViewController.init(style: .single(needCamera: false, cropMode: self.cropMode))
+                        temp.didPickPhotoClosure = { [weak temp] (images) in
+                            guard let temp = temp else { return }
+                            let image = images[0]
                             temp.dismiss(animated: false, completion: {
                                 self.didPickPhotoClosure?([image])
                             })
-                        })
+                        }
+                        self.present(temp, animated: true, completion: nil)
                     }
-                    self.present(temp, animated: true, completion: nil)
                 }
             }
         }
@@ -346,7 +367,7 @@ extension YCCameraView: AVCapturePhotoCaptureDelegate {
 
 class YCVideoCaptureSessionView: UIView {
     
-    private let session: AVCaptureSession
+    let session: AVCaptureSession
     
     private let previewLayer: AVCaptureVideoPreviewLayer
     

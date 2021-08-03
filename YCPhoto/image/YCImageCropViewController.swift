@@ -31,6 +31,8 @@ public class YCImageCropViewController: UIViewController {
     
     var didCropClosure: ((UIImage, CGRect) -> Void)?
     
+    var didCancelClosure: (() -> Void)?
+    
     var image: UIImage
     
     let cropMode: YCCropMode
@@ -131,6 +133,7 @@ public class YCImageCropViewController: UIViewController {
     
     @objc func closeAction() {
         
+        self.didCancelClosure?()
         self.dismiss(animated: true, completion: nil)
     }
     

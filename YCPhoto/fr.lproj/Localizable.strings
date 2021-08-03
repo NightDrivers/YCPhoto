@@ -2,12 +2,12 @@
 "图片下载中..." = "";
 "图片下载失败-%@-%i" = "";
 "图片下载失败-未知错误" = "";
-"图片加载中..." = "Image is loading";
+"图片加载中..." = "L'image est en cours de chargement...";
 "图片加载失败-%@-%i" = "";
 "图片加载失败-未知错误" = "";
-"提示" = "Tips";
-"是否下载iCloud图片?" = "Whether to download iCloud pictures";
-"是否下载iCloud视频?" = "Do you want to download iCloud videos?";
+"提示" = "Remarque";
+"是否下载iCloud图片?" = "Télécharger des images iCloud?";
+"是否下载iCloud视频?" = "Voulez-vous télécharger des vidéos du iCloud?";
 "确定" = "OK";
 "视频下载中..." = "";
 "视频下载失败-%@-%i" = "";

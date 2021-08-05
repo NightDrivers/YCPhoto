@@ -90,21 +90,19 @@ public class YCImageCropViewController: UIViewController {
             $0.top.equalTo(self.snp.bottom).offset(-90)
         }
         closeButton.snp.makeConstraints {
-            $0.left.equalToSuperview().offset(25)
+            $0.left.equalToSuperview().offset(38)
             $0.centerY.equalTo(bottomBgView.snp.top).offset(45)
-            $0.width.height.equalTo(44)
+            $0.width.height.equalTo(36)
+        }
+        rotateButton.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.centerY.equalTo(bottomBgView.snp.top).offset(45)
+            $0.width.height.equalTo(39)
         }
         okButton.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
+            $0.right.equalToSuperview().offset(-38)
             $0.centerY.equalTo(bottomBgView.snp.top).offset(45)
-            $0.width.height.equalTo(60)
-        }
-        if rotatable {
-            rotateButton.snp.makeConstraints {
-                $0.right.equalToSuperview().offset(-25)
-                $0.centerY.equalTo(bottomBgView.snp.top).offset(45)
-                $0.width.height.equalTo(44)
-            }
+            $0.width.height.equalTo(36)
         }
     }
     
@@ -128,7 +126,7 @@ public class YCImageCropViewController: UIViewController {
     
     @objc func rotateAction() {
         
-        self.cropView.rotateImageNinetyDegrees(animated: true, clockwise: true)
+        self.cropView.rotateImageNinetyDegrees(animated: true, clockwise: false)
     }
     
     @objc func closeAction() {
@@ -147,7 +145,7 @@ public class YCImageCropViewController: UIViewController {
     
     lazy var closeButton: UIButton = {
         let temp = UIButton.init(type: .custom)
-        temp.setImage(getBundleImage( "camera_close"), for: .normal)
+        temp.setImage(getBundleImage( "image_crop_close"), for: .normal)
         temp.addTarget(self, action: #selector(self.closeAction), for: .touchUpInside)
         bottomBgView.addSubview(temp)
         return temp
@@ -155,7 +153,7 @@ public class YCImageCropViewController: UIViewController {
     
     lazy var rotateButton: UIButton = {
         let temp = UIButton.init(type: .custom)
-        temp.setImage(getBundleImage( "icon_rotate"), for: .normal)
+        temp.setImage(getBundleImage( "image_crop_rotate"), for: .normal)
         temp.addTarget(self, action: #selector(self.rotateAction), for: .touchUpInside)
         bottomBgView.addSubview(temp)
         return temp
@@ -163,7 +161,7 @@ public class YCImageCropViewController: UIViewController {
     
     lazy var bottomBgView: UIView = {
         let temp = UIView()
-        temp.backgroundColor = UIColor.init(number: 0x3E3E3EFF)
+        temp.backgroundColor = UIColor.white
         view.addSubview(temp)
         return temp
     }()

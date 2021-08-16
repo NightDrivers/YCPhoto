@@ -1,0 +1,6 @@
+framework module TOCropViewController {
+  umbrella header "TOCropViewController-iOS14.4-umbrella.h"
+
+  export *
+  module * { export * }
+}

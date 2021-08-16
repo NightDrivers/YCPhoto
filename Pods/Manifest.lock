@@ -1,0 +1,45 @@
+PODS:
+  - BaseKitSwift (5.0.29):
+    - BaseKitSwift/Extension (= 5.0.29)
+    - BaseKitSwift/Utility (= 5.0.29)
+    - BaseKitSwift/View (= 5.0.29)
+    - SnapKit
+  - BaseKitSwift/Extension (5.0.29):
+    - SnapKit
+  - BaseKitSwift/Utility (5.0.29):
+    - SnapKit
+  - BaseKitSwift/View (5.0.29):
+    - SnapKit
+  - SnapKit (5.0.1)
+  - SVProgressHUD (2.2.5)
+  - TOCropViewController (2.6.0)
+
+DEPENDENCIES:
+  - "BaseKitSwift (from `ssh://lindc@10.10.2.2:29418/~lindc/BaseKitSwift.git`)"
+  - SVProgressHUD
+  - TOCropViewController
+
+SPEC REPOS:
+  trunk:
+    - SnapKit
+    - SVProgressHUD
+    - TOCropViewController
+
+EXTERNAL SOURCES:
+  BaseKitSwift:
+    :git: "ssh://lindc@10.10.2.2:29418/~lindc/BaseKitSwift.git"
+
+CHECKOUT OPTIONS:
+  BaseKitSwift:
+    :commit: 138dfc3fdb6e07cfd7a60859b4a54c2ff8b8c47c
+    :git: "ssh://lindc@10.10.2.2:29418/~lindc/BaseKitSwift.git"
+
+SPEC CHECKSUMS:
+  BaseKitSwift: e098cac83711ccb235e78cd04025027846028a4a
+  SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+  TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
+
+PODFILE CHECKSUM: cf6d56f342c0d5f93bdb316f2ba80224d94293bf
+
+COCOAPODS: 1.10.1

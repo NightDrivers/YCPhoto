@@ -1,0 +1,6 @@
+framework module SnapKit {
+  umbrella header "SnapKit-iOS14.4-umbrella.h"
+
+  export *
+  module * { export * }
+}

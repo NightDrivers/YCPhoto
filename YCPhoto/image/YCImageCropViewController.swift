@@ -29,9 +29,9 @@ public enum YCCropMode {
 
 public class YCImageCropViewController: UIViewController {
     
-    var didCropClosure: ((UIImage, CGRect) -> Void)?
+    public var didCropClosure: ((UIImage, CGRect) -> Void)?
     
-    var didCancelClosure: (() -> Void)?
+    public var didCancelClosure: (() -> Void)?
     
     var image: UIImage
     
@@ -41,7 +41,7 @@ public class YCImageCropViewController: UIViewController {
     
     var firstTime = true
     
-    init(image: UIImage, cropMode: YCCropMode, rotatable: Bool = false) {
+    public init(image: UIImage, cropMode: YCCropMode, rotatable: Bool = false) {
         self.image = image
         self.rotatable = rotatable
         self.cropMode = cropMode

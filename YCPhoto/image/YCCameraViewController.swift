@@ -79,7 +79,6 @@ class YCCameraHostViewController: UIViewController {
         
         view.backgroundColor = UIColor.white
         configureCameraView()
-        YCMotionOrientationManager.shared.startAccelerometerUpdates()
     }
     
     func didTakePhotoAction(_ image: UIImage, target: UIViewController, closure: @escaping (UIImage) -> Void) -> Void {
@@ -146,10 +145,6 @@ class YCCameraHostViewController: UIViewController {
     override var prefersStatusBarHidden: Bool {
         
         return true
-    }
-    
-    deinit {
-        YCMotionOrientationManager.shared.stopAccelerometerUpdates()
     }
 }
 
@@ -274,14 +269,18 @@ open class YCCameraView: YCVideoCaptureSessionView {
     
     public var didCapturePhotoClosure: ((UIImage) -> Void)?
     
+    let orientationManager = YCMotionOrientationManager()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configOutput()
+        orientationManager.startAccelerometerUpdates()
     }
     
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
         configOutput()
+        orientationManager.startAccelerometerUpdates()
     }
     
     func configOutput() -> Void {
@@ -306,7 +305,7 @@ open class YCCameraView: YCVideoCaptureSessionView {
                         print(error)
                     }
                     guard let photoSampleBuffer = buffer else { return }
-                    let image = UIImage.image(sample: photoSampleBuffer, device: YCMotionOrientationManager.shared.deviceOrientation)
+                    let image = UIImage.image(sample: photoSampleBuffer, device: self.orientationManager.deviceOrientation)
                     self.didCapturePhotoClosure?(image)
                 })
             }
@@ -326,6 +325,10 @@ open class YCCameraView: YCVideoCaptureSessionView {
         temp.outputSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
         return temp
     }()
+    
+    deinit {
+        orientationManager.stopAccelerometerUpdates()
+    }
 }
 
 extension YCCameraView: AVCapturePhotoCaptureDelegate {
@@ -334,7 +337,7 @@ extension YCCameraView: AVCapturePhotoCaptureDelegate {
     public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         
         guard let buffer = photo.pixelBuffer else { return }
-        let image = UIImage.image(pixel: buffer, device: YCMotionOrientationManager.shared.deviceOrientation)
+        let image = UIImage.image(pixel: buffer, device: orientationManager.deviceOrientation)
         didCapturePhotoClosure?(image)
     }
     
@@ -342,7 +345,7 @@ extension YCCameraView: AVCapturePhotoCaptureDelegate {
     public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
         
         guard let photoSampleBuffer = photoSampleBuffer else { return }
-        let image = UIImage.image(sample: photoSampleBuffer, device: YCMotionOrientationManager.shared.deviceOrientation)
+        let image = UIImage.image(sample: photoSampleBuffer, device: orientationManager.deviceOrientation)
         didCapturePhotoClosure?(image)
     }
 }

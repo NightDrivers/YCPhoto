@@ -92,7 +92,7 @@ class ViewController: UIViewController {
         
 //        let temp = YCImagePickerViewController.init(style: .multi(maxCount: 9))
 //        let temp = YCImagePickerViewController.init(style: .single(needCamera: true, cropMode: .fixableCrop(1)))
-        let temp = YCCameraViewController.init(with: .flexibleCrop(1), supply: nil)
+        let temp = YCCameraViewController.init(with: .flexibleCrop(-1), supply: nil)
         temp.didPickPhotoClosure = { [weak temp] in
             let image = $0[0]
             temp?.dismiss(animated: true, completion: {

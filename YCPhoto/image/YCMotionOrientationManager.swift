@@ -11,8 +11,8 @@ import Foundation
 import UIKit
 import CoreMotion
 
-typealias YCDeviceOrientationHandler = (UIDeviceOrientation) -> Swift.Void
-typealias YCInterfaceOrientationHandler = (UIInterfaceOrientation) -> Swift.Void
+public typealias YCDeviceOrientationHandler = (UIDeviceOrientation) -> Swift.Void
+public typealias YCInterfaceOrientationHandler = (UIInterfaceOrientation) -> Swift.Void
 
 public extension YCMotionOrientationManager {
     
@@ -21,7 +21,8 @@ public extension YCMotionOrientationManager {
 
 //MARK: 当iPhone锁定屏幕朝向后，系统的UIDevice.orientationDidChangeNotification无法生效，只好用这个了
 public class YCMotionOrientationManager: NSObject{
-    static let shared =  YCMotionOrientationManager()
+    
+    public static let shared =  YCMotionOrientationManager()
     
     // MARK: - Variables
     var motionManager: CMMotionManager = {
@@ -64,11 +65,11 @@ public class YCMotionOrientationManager: NSObject{
         return CGAffineTransform(rotationAngle: (CGFloat.pi * rotationDegree)/180.0)
     }
     
-    private override init(){
+    public override init(){
         super.init()
     }
     
-    func startAccelerometerUpdates(deviceBlock: YCDeviceOrientationHandler? = nil, interfaceBlock: YCInterfaceOrientationHandler? = nil){
+    public func startAccelerometerUpdates(deviceBlock: YCDeviceOrientationHandler? = nil, interfaceBlock: YCInterfaceOrientationHandler? = nil){
         self.deviceOrientationBlock = deviceBlock
         self.interfaceOrientationBlock = interfaceBlock
         // Simulator
@@ -84,7 +85,7 @@ public class YCMotionOrientationManager: NSObject{
         }
     }
     
-    func stopAccelerometerUpdates(){
+    public func stopAccelerometerUpdates(){
         self.motionManager.stopAccelerometerUpdates()
         // Simulator
         #if arch(i386) || arch(x86_64)

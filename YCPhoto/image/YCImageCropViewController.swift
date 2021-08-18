@@ -75,7 +75,11 @@ public class YCImageCropViewController: UIViewController {
             cropView.aspectRatio = CGSize.init(width: ratio, height: 1)
             cropView.aspectRatioLockEnabled = true
         case .flexibleCrop(let ratio):
-            cropView.aspectRatio = CGSize.init(width: ratio, height: 1)
+            if ratio > 0 {
+                cropView.aspectRatio = CGSize.init(width: ratio, height: 1)
+            }else {
+                cropView.aspectRatio = image.size
+            }
         default:
             cropView.aspectRatio = CGSize.init(width: 1, height: 1)
         }

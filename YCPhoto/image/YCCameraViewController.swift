@@ -96,7 +96,7 @@ class YCCameraHostViewController: UIViewController {
                 })
             }
             temp.didCancelClosure = {
-                self.cameraPickerView.cameraView.videoCaptureView.session.startRunning()
+                self.cameraPickerView.sessionStartRunning()
             }
             target.present(temp, animated: false, completion: nil)
         }
@@ -109,7 +109,7 @@ class YCCameraHostViewController: UIViewController {
         cameraPickerView.didCapturePhotoClosure = { [weak self] in
             
             guard let self = self else { return }
-            self.cameraPickerView.cameraView.videoCaptureView.session.stopRunning()
+            self.cameraPickerView.sessionStopRunning()
             self.didTakePhotoAction($0, target: self, closure: { 
                 self.didPickPhotoClosure?([$0]) 
             })
@@ -140,6 +140,7 @@ class YCCameraHostViewController: UIViewController {
                 }
             }
         }
+        cameraPickerView.sessionStartRunning()
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -152,7 +153,7 @@ class YCCameraHostViewController: UIViewController {
     }
 }
 
-class YCCameraImagePickerView: UIView {
+class YCCameraImagePickerView: YCCameraView {
     
     enum Action {
         case close, photoLibrary
@@ -160,35 +161,30 @@ class YCCameraImagePickerView: UIView {
     
     var didTouchButtonClosure: ((Action) -> Void)?
     
-    var didCapturePhotoClosure: ((UIImage) -> Void)? {
-        
-        set {
-            cameraView.didCapturePhotoClosure = newValue
-        }
-        
-        get {
-            return cameraView.didCapturePhotoClosure
-        }
-    }
-    
     var supplyView: UIView? {
         
         didSet {
             if let old = oldValue {
-                old.snp.removeConstraints()
                 old.removeFromSuperview()
             }
             makeConstraint()
         }
     }
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        makeConstraint()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        makeConstraint()
+    }
+    
     func makeConstraint() -> Void {
         
         let snp = h_safeAreaLayoutGuide.snp
         let horizonalPadding: CGFloat = 30
-        cameraView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
         if let supplyView = supplyView {
             addSubview(supplyView)
             supplyView.snp.makeConstraints {
@@ -223,21 +219,15 @@ class YCCameraImagePickerView: UIView {
         case 1:
             didTouchButtonClosure?(.close)
         case 2:
-            cameraView.videoCaptureView.switchTorchMode()
+            switchTorchMode()
         case 3:
             didTouchButtonClosure?(.photoLibrary)
         case 4:
-            cameraView.capturePhoto()
+            capturePhoto()
         default:
             break
         }
     }
-    
-    lazy var cameraView: YCCameraView = {
-        let temp = YCCameraView()
-        addSubview(temp)
-        return temp
-    }()
     
     lazy var closeButton: UIButton = {
         let temp = UIButton.init(type: .custom)
@@ -280,27 +270,30 @@ class YCCameraImagePickerView: UIView {
     }()
 }
 
-class YCCameraView: UIView {
+open class YCCameraView: YCVideoCaptureSessionView {
+    
+    public var didCapturePhotoClosure: ((UIImage) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        makeConstraint()
+        configOutput()
     }
     
-    var didCapturePhotoClosure: ((UIImage) -> Void)?
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required public init?(coder: NSCoder) {
+        super.init(coder: coder)
+        configOutput()
     }
     
-    private func makeConstraint() -> Void {
+    func configOutput() -> Void {
         
-        videoCaptureView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+        if #available(iOS 10.0, *) {
+            self.output = photoOutput
+        } else {
+            self.output = stillImageOutput
         }
     }
     
-    func capturePhoto() -> Void {
+    public func capturePhoto() -> Void {
         
         if #available(iOS 10, *) {
             let settings = AVCapturePhotoSettings.init(format: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
@@ -320,17 +313,6 @@ class YCCameraView: UIView {
         }
     }
     
-    lazy var videoCaptureView: YCVideoCaptureSessionView = {
-        let temp = YCVideoCaptureSessionView()
-        if #available(iOS 10.0, *) {
-            temp.output = photoOutput
-        } else {
-            temp.output = stillImageOutput
-        }
-        addSubview(temp)
-        return temp
-    }()
-    
     @available(iOS 10.0, *)
     private lazy var photoOutput: AVCapturePhotoOutput = {
         let temp = AVCapturePhotoOutput()
@@ -349,7 +331,7 @@ class YCCameraView: UIView {
 extension YCCameraView: AVCapturePhotoCaptureDelegate {
     
     @available(iOS 11.0, *)
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+    public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         
         guard let buffer = photo.pixelBuffer else { return }
         let image = UIImage.image(pixel: buffer, device: YCMotionOrientationManager.shared.deviceOrientation)
@@ -357,7 +339,7 @@ extension YCCameraView: AVCapturePhotoCaptureDelegate {
     }
     
     @available(iOS, introduced: 10.0, deprecated: 11.0)
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
+    public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
         
         guard let photoSampleBuffer = photoSampleBuffer else { return }
         let image = UIImage.image(sample: photoSampleBuffer, device: YCMotionOrientationManager.shared.deviceOrientation)
@@ -365,15 +347,15 @@ extension YCCameraView: AVCapturePhotoCaptureDelegate {
     }
 }
 
-class YCVideoCaptureSessionView: UIView {
+open class YCVideoCaptureSessionView: UIView {
     
-    let session: AVCaptureSession
+    private let session: AVCaptureSession
     
     private let previewLayer: AVCaptureVideoPreviewLayer
     
     private var captureDevice: AVCaptureDevice?
     
-    var output: AVCaptureOutput? {
+    public var output: AVCaptureOutput? {
         
         didSet {
             guard let output = output else { return }
@@ -402,20 +384,44 @@ class YCVideoCaptureSessionView: UIView {
         }catch let error {
             print(error)
         }
-        //FIXME: 这个会卡主线程
+    }
+    
+    public func sessionStartRunning() -> Void {
+        
         self.session.startRunning()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    public func sessionStopRunning() -> Void {
+        
+        self.session.stopRunning()
     }
     
-    override func layoutSubviews() {
+    required public init?(coder: NSCoder) {
+        session = AVCaptureSession()
+        previewLayer = AVCaptureVideoPreviewLayer.init(session: session)
+        previewLayer.videoGravity = .resizeAspectFill
+        super.init(coder: coder)
+        
+        self.layer.addSublayer(previewLayer)
+        do {
+            if let device = AVCaptureDevice.default(for: .video) {
+                self.captureDevice = device
+                let input = try AVCaptureDeviceInput.init(device: device)
+                if self.session.canAddInput(input) {
+                    self.session.addInput(input)
+                }
+            }
+        }catch let error {
+            print(error)
+        }
+    }
+    
+    public override func layoutSubviews() {
         super.layoutSubviews()
         previewLayer.frame = bounds
     }
     
-    func switchTorchMode() -> Void {
+    public func switchTorchMode() -> Void {
         
         if let device = captureDevice {
             switch device.torchMode {

@@ -139,6 +139,9 @@ class YCCameraHostViewController: UIViewController {
                 }
             }
         }
+        
+        cameraPickerView.torchButton.isHidden = !cameraPickerView.hasTorch()
+        
         cameraPickerView.sessionStartRunning()
     }
     
@@ -452,5 +455,10 @@ open class YCVideoCaptureSessionView: UIView {
                 break
             }
         }
+    }
+    
+    public func hasTorch() -> Bool {
+        
+        return captureDevice?.hasTorch ?? false
     }
 }

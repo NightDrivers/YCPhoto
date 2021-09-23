@@ -58,6 +58,9 @@
 		08E96FB382E3517012230530 /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
 		1F398B2AC6876CC20C469C1E /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
 		2725FE2B67E2D12AB22E1879 /* Pods-YCPhoto.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YCPhoto.debug.xcconfig"; path = "Target Support Files/Pods-YCPhoto/Pods-YCPhoto.debug.xcconfig"; sourceTree = "<group>"; };
+		6345BF5826FC751C00417227 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
+		6345BF5926FC751D00417227 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		6345BF5A26FC751D00417227 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		6377315C26A1224E004BC638 /* YCPhoto.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = YCPhoto.podspec; sourceTree = "<group>"; };
 		638192FD26253FBE00C682D1 /* UIImage+Buffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Buffer.swift"; sourceTree = "<group>"; };
 		63819300262540C200C682D1 /* UIView+Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Orientation.swift"; sourceTree = "<group>"; };
@@ -292,6 +295,7 @@
 				fr,
 				ko,
 				"zh-Hant",
+				ru,
 			);
 			mainGroup = 63EED00D262441AB0086227C;
 			productRefGroup = 63EED018262441AB0086227C /* Products */;
@@ -437,6 +441,7 @@
 				63B0A5D026B915A000F5CD34 /* fr */,
 				63B0A5D326B915AB00F5CD34 /* ko */,
 				63B0A5D626B915E600F5CD34 /* zh-Hant */,
+				6345BF5A26FC751D00417227 /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -450,6 +455,7 @@
 				63B0A5CE26B915A000F5CD34 /* fr */,
 				63B0A5D126B915AB00F5CD34 /* ko */,
 				63B0A5D426B915E600F5CD34 /* zh-Hant */,
+				6345BF5826FC751C00417227 /* ru */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -463,6 +469,7 @@
 				63B0A5CF26B915A000F5CD34 /* fr */,
 				63B0A5D226B915AB00F5CD34 /* ko */,
 				63B0A5D526B915E600F5CD34 /* zh-Hant */,
+				6345BF5926FC751D00417227 /* ru */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";

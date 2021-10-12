@@ -272,7 +272,7 @@ open class YCCameraView: YCVideoCaptureSessionView {
     
     public var didCapturePhotoClosure: ((UIImage) -> Void)?
     
-    let orientationManager = YCMotionOrientationManager()
+    public let orientationManager = YCMotionOrientationManager()
     
     override init(frame: CGRect) {
         super.init(frame: frame)

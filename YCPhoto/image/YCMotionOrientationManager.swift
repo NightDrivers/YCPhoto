@@ -36,13 +36,13 @@ public class YCMotionOrientationManager: NSObject{
         return qu
     }()
     
-    var interfaceOrientation: UIInterfaceOrientation = .portrait
-    var deviceOrientation: UIDeviceOrientation = .portrait
+    public var interfaceOrientation: UIInterfaceOrientation = .portrait
+    public var deviceOrientation: UIDeviceOrientation = .portrait
     
-    var deviceOrientationBlock: YCDeviceOrientationHandler?
-    var interfaceOrientationBlock: YCInterfaceOrientationHandler?
+    public var deviceOrientationBlock: YCDeviceOrientationHandler?
+    public var interfaceOrientationBlock: YCInterfaceOrientationHandler?
     
-    var affineTransform: CGAffineTransform {
+    public var affineTransform: CGAffineTransform {
         var rotationDegree: CGFloat = 0
         
         switch self.interfaceOrientation {
@@ -140,7 +140,7 @@ public class YCMotionOrientationManager: NSObject{
         }
     }
     
-    func deviceOrientation(interfaceOrientation orientation: UIInterfaceOrientation) -> UIDeviceOrientation{
+    func deviceOrientation(interfaceOrientation orientation: UIInterfaceOrientation) -> UIDeviceOrientation {
         
         switch orientation {
         case .landscapeLeft:

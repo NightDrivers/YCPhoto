@@ -53,13 +53,19 @@ struct YCAssetCollection: Equatable {
     let fetchResult: PHFetchResult<PHAsset>
 }
 
+private extension PHFetchResult where ObjectType == PHAsset {
+    
+    func reversedAssetAtIndex(at index: Int) -> PHAsset {
+        // Return results in reverse order
+        return self[count - index - 1]
+    }
+}
+
 func fetchAssetCollections() -> [YCAssetCollection] {
     
     var collections = [YCAssetCollection]()
     let options = PHFetchOptions()
-    options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-    // 1 图片 2 视频 3 音频
-    options.predicate = NSPredicate.init(format: "mediaType = 1")
+    options.predicate = NSPredicate.init(format: "duration == 0")
     
     let smartAlbumCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: nil)
     smartAlbumCollections.enumerateObjects { (collection, index, finished) in
@@ -154,7 +160,13 @@ class YCImagePickerHostViewController: UIViewController {
     
     @IBOutlet weak var effectView: UIVisualEffectView!
     
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableView: UITableView! {
+        didSet {
+            if #available(iOS 15, *) {
+                tableView.sectionHeaderTopPadding = 0
+            }
+        }
+    }
     
     fileprivate let imageManager = PHCachingImageManager()
     
@@ -366,7 +378,7 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
         }else {
             guard let temp = currentAssetCollection else { return cell }
             let index = needCamera ? indexPath.item - 1 : indexPath.item
-            let asset = temp.fetchResult[index]
+            let asset = temp.fetchResult.reversedAssetAtIndex(at: index)
             imageManager.loadIconImage(asset: asset, targetSize: assetItemSize * UIScreen.main.scale, closure: { (image) in
                 cell.imageView.image = image
             })
@@ -399,7 +411,7 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
         switch style {
         case .multi(maxCount: _):
             guard let temp = currentAssetCollection else { return }
-            let asset = temp.fetchResult[indexPath.item]
+            let asset = temp.fetchResult.reversedAssetAtIndex(at: indexPath.item)
             self.requestImage(asset: asset, showActivity: false, closure: {
                 switch $0 {
                 case .success(let image):
@@ -433,7 +445,7 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
             }else {
                 let index = needCamera ? indexPath.item - 1 : indexPath.item
                 guard let temp = currentAssetCollection else { return }
-                let asset = temp.fetchResult[index]
+                let asset = temp.fetchResult.reversedAssetAtIndex(at: index)
                 self.requestImage(asset: asset, closure: {
                     switch $0 {
                     case .success(let image):
@@ -481,11 +493,11 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
         let addedAssets = addedRects
             .flatMap { rect in collectionView.indexPathsForElements(in: rect) }
             .filter({ style.needCamera ? $0.item != 0 : true })
-            .map { style.needCamera ? temp.fetchResult.object(at: $0.item - 1) : temp.fetchResult.object(at: $0.item) }
+            .map { style.needCamera ? temp.fetchResult.reversedAssetAtIndex(at: $0.item - 1) : temp.fetchResult.reversedAssetAtIndex(at: $0.item) }
         let removedAssets = removedRects
             .flatMap { rect in collectionView.indexPathsForElements(in: rect) }
             .filter({ style.needCamera ? $0.item != 0 : true })
-            .map { style.needCamera ? temp.fetchResult.object(at: $0.item - 1) : temp.fetchResult.object(at: $0.item) }
+            .map { style.needCamera ? temp.fetchResult.reversedAssetAtIndex(at: $0.item - 1) : temp.fetchResult.reversedAssetAtIndex(at: $0.item) }
         
         // Update the assets the PHCachingImageManager is caching.
         imageManager.startCachingImages(for: addedAssets,
@@ -611,7 +623,7 @@ extension YCImagePickerHostViewController: UITableViewDelegate, UITableViewDataS
         let collection = collections[indexPath.row]
         cell.nameLabel.text = collection.collection.localizedTitle
         cell.countLabel.text = "\(collection.fetchResult.count)"
-        if let asset = collection.fetchResult.firstObject {
+        if let asset = collection.fetchResult.lastObject {
             PHImageManager.default().loadIconImage(asset: asset, targetSize: CGSize.init(width: 60, height: 60)*UIScreen.main.scale, closure: { (image) in
                 cell.reprImageView.image = image
             })

@@ -150,11 +150,17 @@ class YCImagePickerHostViewController: UIViewController {
     
     @IBOutlet weak var closeButton: UIButton!
     
-    @IBOutlet weak var multiSelectCompleteButton: UIButton!
+    @IBOutlet weak var closeBtnWidth: NSLayoutConstraint!
     
     @IBOutlet weak var collectionSwitchButton: UIButton!
     
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var collectionView: UICollectionView! {
+        didSet {
+            if #available(iOS 11.0, *) {
+                collectionView.contentInsetAdjustmentBehavior = .always
+            }
+        }
+    }
     
     @IBOutlet weak var collectionViewFlowLayout: UICollectionViewFlowLayout!
     
@@ -167,6 +173,14 @@ class YCImagePickerHostViewController: UIViewController {
             }
         }
     }
+    
+    @IBOutlet weak var previewBtn: UIButton!
+    
+    @IBOutlet weak var doneBtn: UIButton!
+    
+    @IBOutlet weak var bottomBgView: UIView!
+    
+    @IBOutlet weak var doneBtnWidth: NSLayoutConstraint!
     
     fileprivate let imageManager = PHCachingImageManager()
     
@@ -190,7 +204,7 @@ class YCImagePickerHostViewController: UIViewController {
             self.collectionSwitchButton.setTitle(currentAssetCollection?.collection.localizedTitle, for: .normal)
             self.imageCache = [:]
             self.collectionView.reloadData()
-            self.updatePickedImageCount()
+            self.updateBottomBarBtnStatus()
         }
     }
     
@@ -201,7 +215,7 @@ class YCImagePickerHostViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.init(number: 0x323232ff)
         PHPhotoLibrary.shared().register(self)
         configure()
         
@@ -213,11 +227,9 @@ class YCImagePickerHostViewController: UIViewController {
     
     func configure() -> Void {
         
-        updatePickedImageCount()
         collectionSwitchButton.setTitle(currentAssetCollection?.collection.localizedTitle, for: .normal)
         collectionSwitchButton.setImage(getBundleImage("btn_icon_arrow_down"), for: .normal)
         collectionSwitchButton.setImage(getBundleImage("btn_icon_arrow_up"), for: .selected)
-        closeButton.setImage(getBundleImage("btn_close"), for: .normal)
         
         let w: CGFloat
         switch UIDevice.current.userInterfaceIdiom {
@@ -230,10 +242,8 @@ class YCImagePickerHostViewController: UIViewController {
         switch style {
         case .multi(maxCount: _):
             collectionView.allowsMultipleSelection = true
-            multiSelectCompleteButton.isHidden = false
         default:
             collectionView.allowsMultipleSelection = false
-            multiSelectCompleteButton.isHidden = true
         }
         
         view.addSubview(effectView)
@@ -242,16 +252,51 @@ class YCImagePickerHostViewController: UIViewController {
             $0.top.equalTo(topView.snp.bottom)
         }
         effectView.isHidden = true
+        
+        func configBtn(_ btn: UIButton) {
+            
+            btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+            btn.setTitleColor(.white, for: .normal)
+            btn.setTitleColor(UIColor.init(number: 0xa8a8a8ff), for: .disabled)
+        }
+        
+        let cancelText = "取消".yc_localized
+        closeButton.setTitle(cancelText, for: .normal)
+        closeBtnWidth.constant = cancelText.drawWidth(with: closeButton.titleLabel!.font)
+        
+        configBtn(previewBtn)
+        previewBtn.setTitle("预览".yc_localized, for: .normal)
+        configBtn(doneBtn)
+        doneBtn.setTitle("确定".yc_localized, for: .normal)
+        self.doneBtn.layer.masksToBounds = true
+        self.doneBtn.layer.cornerRadius = 5
+        updateBottomBarBtnStatus()
     }
     
-    func updatePickedImageCount() -> Void {
+    func updateBottomBarBtnStatus() -> Void {
         
         switch style {
-        case .multi(maxCount: let count):
+        case .single(needCamera: _, cropMode: _):
+            bottomBgView.isHidden = true
+        case .multi(maxCount: _):
+            bottomBgView.isHidden = false
             let selectedCount = collectionView.indexPathsForSelectedItems != nil ? collectionView.indexPathsForSelectedItems!.count : 0
-            self.multiSelectCompleteButton.setTitle(String.init(format: "%i/%i完成".yc_localized, selectedCount, count), for: .normal)
-        default:
-            break
+            let doneTitle: String
+            if selectedCount > 0 {
+                self.previewBtn.isEnabled = true
+                self.doneBtn.isEnabled = true
+                doneTitle = String.init(format: "完成(%i)".yc_localized, selectedCount)
+                self.doneBtn.setTitle(doneTitle, for: .normal)
+                self.doneBtn.backgroundColor = UIColor.init(number: 0x50a938ff)
+                
+            } else {
+                self.previewBtn.isEnabled = false
+                self.doneBtn.isEnabled = false
+                doneTitle = "完成".yc_localized
+                self.doneBtn.setTitle(doneTitle, for: .normal)
+                self.doneBtn.backgroundColor = UIColor.init(number: 0x323232ff)
+            }
+            doneBtnWidth.constant = doneTitle.drawWidth(with: doneBtn.titleLabel!.font) + 30
         }
     }
     
@@ -265,6 +310,12 @@ class YCImagePickerHostViewController: UIViewController {
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag, completion: completion)
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
+    }
+    
+    @IBAction func previewAction(_ sender: Any) {
+        
+        let temp = ViewControllerFromStoryboard(file: "image", iden: "image.preview") as! YCImagePreviewViewController
+        self.show(temp, sender: nil)
     }
 }
 
@@ -325,7 +376,7 @@ extension YCImagePickerHostViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func multiSelectCompleteAction() {
+    @IBAction func doneAction() {
         
         switch style {
         case .multi(maxCount: _):
@@ -417,7 +468,7 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
                 case .success(let image):
                     self.didSelectImageClosure?(image)
                     self.imageCache[indexPath.item] = image
-                    self.updatePickedImageCount()
+                    self.updateBottomBarBtnStatus()
                 case .failure(let closure):
                     collectionView.deselectItem(at: indexPath, animated: true)
                     closure()
@@ -466,9 +517,9 @@ extension YCImagePickerHostViewController: UICollectionViewDelegateFlowLayout, U
         switch style {
         case .multi(maxCount: _):
             self.imageCache.removeValue(forKey: indexPath.item)
-            self.updatePickedImageCount()
+            self.updateBottomBarBtnStatus()
         default:
-            break
+            break 
         }
     }
     

@@ -11,6 +11,7 @@
 		6377315D26A1224E004BC638 /* YCPhoto.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 6377315C26A1224E004BC638 /* YCPhoto.podspec */; };
 		638192FE26253FBE00C682D1 /* UIImage+Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638192FD26253FBE00C682D1 /* UIImage+Buffer.swift */; };
 		63819301262540C200C682D1 /* UIView+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63819300262540C200C682D1 /* UIView+Orientation.swift */; };
+		639F8CC527D2130F004B586D /* YCImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639F8CC427D2130F004B586D /* YCImagePreviewViewController.swift */; };
 		63B3DDE226676189005FEE36 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63B3DDE426676189005FEE36 /* Localizable.strings */; };
 		63BAC26A2626820300062898 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BAC2692626820300062898 /* AppDelegate.swift */; };
 		63BAC26E2626820300062898 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BAC26D2626820300062898 /* ViewController.swift */; };
@@ -64,6 +65,7 @@
 		6377315C26A1224E004BC638 /* YCPhoto.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = YCPhoto.podspec; sourceTree = "<group>"; };
 		638192FD26253FBE00C682D1 /* UIImage+Buffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Buffer.swift"; sourceTree = "<group>"; };
 		63819300262540C200C682D1 /* UIView+Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Orientation.swift"; sourceTree = "<group>"; };
+		639F8CC427D2130F004B586D /* YCImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YCImagePreviewViewController.swift; sourceTree = "<group>"; };
 		63B0A5CB26B9154900F5CD34 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		63B0A5CC26B9154900F5CD34 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		63B0A5CD26B9154900F5CD34 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 				63EED044262443380086227C /* YCImagePickerViewController.swift */,
 				63EED045262443380086227C /* YCCameraViewController.swift */,
 				63EED046262443380086227C /* YCImageCropViewController.swift */,
+				639F8CC427D2130F004B586D /* YCImagePreviewViewController.swift */,
 				63EED05526244A3A0086227C /* PHImageManager+.swift */,
 				638192FD26253FBE00C682D1 /* UIImage+Buffer.swift */,
 				63819300262540C200C682D1 /* UIView+Orientation.swift */,
@@ -414,6 +417,7 @@
 				63EED048262443380086227C /* YCImagePickerViewController.swift in Sources */,
 				63EED049262443380086227C /* YCCameraViewController.swift in Sources */,
 				63819301262540C200C682D1 /* UIView+Orientation.swift in Sources */,
+				639F8CC527D2130F004B586D /* YCImagePreviewViewController.swift in Sources */,
 				638192FE26253FBE00C682D1 /* UIImage+Buffer.swift in Sources */,
 				63EED05626244A3A0086227C /* PHImageManager+.swift in Sources */,
 				63EED047262443380086227C /* YCMotionOrientationManager.swift in Sources */,
